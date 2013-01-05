@@ -9,6 +9,7 @@ exports.listen = function( server ){
             'cwd':'/opt/openchat'
         });
         
+        cmd.stdout.setEncoding("ASCII");
         cmd.stdout.on("data",function(data){
             console.log( "data:", data)
             res.writeHead(200, {
