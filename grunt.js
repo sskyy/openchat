@@ -2,13 +2,14 @@ module.exports = function(grunt) {
     var fs = require('fs');
     var spawn = require("child_process").spawn;
     var globalConfig = require("./src/config.js");
+    var os = require("os");
     
     // Project configuration.
     grunt.initConfig({
         watch: {
             src : {
                 files : ['src/client/*.coffee','src/client/*.html','src/config.js'],
-                tasks : ['build-openchat', 'coffee']
+                tasks : ['build-openchat']
             }
         },
         coffee : {
@@ -35,7 +36,64 @@ module.exports = function(grunt) {
         //build openchat_runner.html
         fs.writeFileSync( './build/client/openchat_runner.html',
             grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html').toString(), globalConfig) )
+            
+         //build openchat.js
+         grunt.task.run('coffee');
+         
+         //ÉÏ´«µ½github
     });
+    
+    grunt.registerTask( 'github-commit', function(  ){
+        var root = this;
+        var done = root.async();
+        var message = fs.readFileSync('./src/github.message');
+        var command = ['git', ['commit', '-a', '-m', message] ];
+//        if( /^win/.test( os.platform() ) ){
+//            command = ['cmd', ['git', 'commit', '-a', '-m', message ] ];
+//        }
+        
+        var result = spawn( command[0], command[1] );
+        result.stdout.setEncoding('utf8');
+        result.stdout.on("data", function(data){
+           console.log( "commit data", data); 
+        });
+        result.stderr.setEncoding('utf8');
+        result.stderr.on("data", function(err){
+           console.log("commit err", err); 
+        });
+        
+        result.on('exit', function(code){
+           console.log('git commit leave with code', code);
+           if( root.args.length > 0 ){
+               grunt.task.run( 'github-push' );
+           }
+           done();
+        });
+        
+        
+    });
+    
+    grunt.registerTask('github-push', function(){
+        var root = this;
+        var done = root.async();
+        var command = ['git', ['push'] ];
+        if( /^win/.test( os.platform() ) ){
+            command = ['cmd', ['git', 'push']]
+        }
+        var result = spawn( command[0], command[1] );
+        result.stdout.setEncoding('utf8');
+        result.stdout.on('data', function(data){
+            console.log('data:', data);
+        })
+        result.stderr.setEncoding('utf8');
+        result.stderr.on('data', function(err){
+            console.log('errr:', err);
+        })
+        result.on("exit", function( code){
+           console.log("git push finished with code:", code);
+           done();
+        });
+    })
     
     function coffee_template( coffeeContent ){
         return grunt.template.process( coffee_replace_token( coffeeContent ), globalConfig );
