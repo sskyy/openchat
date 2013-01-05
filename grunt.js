@@ -51,6 +51,7 @@ module.exports = function(grunt) {
         addRes.on('exit', function(code){
             done();
         });
+        console.log( "aaa");
     });
     
     grunt.registerTask( 'github-commit', function(  ){
@@ -82,7 +83,7 @@ module.exports = function(grunt) {
     });
     
     grunt.registerTask('github-push', function(){
-        console.log( "aaa");
+        
         var root = this;
         var done = root.async();
         var command = ['git', ['push'] ];
