@@ -1,1 +1,12 @@
-#用于检测和当前用户登录
+
+#user main file
+
+angular.module('openchat.user',[]).service('$user', ()->
+
+  $user = {};
+  $user.auto_detect = () ->
+    console.log 'auto detect user'
+  
+  return $user;
+  
+)

@@ -1,50 +1,82 @@
 
-angular.module('openchat', []).controller('basic', function($scope) {
+angular.module('openchat.service', []).service('$connect', function() {
+  var $connect, url;
+  url = '<%= config.host%>';
+  if (typeof io === void 0) {
+    console.log("socket.io not exist");
+    return {};
+  }
+  $connect = {};
+  $connect.connect = function() {
+    return io.connect(url);
+  };
+  return $connect;
+});
+
+angular.module('openchat.user', []).service('$user', function() {
+  var $user;
+  $user = {};
+  $user.auto_detect = function() {
+    return console.log('auto detect user');
+  };
+  return $user;
+});
+
+angular('openchat.page_feature', []).service('$page_feature', function() {
+  var $page_feature;
+  $page_feature = {};
+  return $page_feature;
+});
+
+angular.module('openchat', ['openchat.service', 'openchat.user']).controller('basic', function($scope, $connect, $user) {
+  var bind_events, socket;
   $scope.current_user = {
     name: 'jason'
   };
   $scope.message = {};
+  socket = null;
   $scope.connect = function() {
-    var url;
-    if ($scope.socket != null) {
-      if (!$scope.socket.socket.connected) {
-        return $scope.socket.socket.connect();
+    if (socket != null) {
+      if (!socket.socket.connected) {
+        return socket.socket.connect();
       }
     } else {
-      url = "http://42.96.146.173:8000";
-      $scope.socket = io.connect(url);
-      console.log('begin connect', io);
-      $scope.socket.on('connect', function() {
-        console.log($scope.socket);
-        return $scope.socket.emit("set_current_user", $scope.current_user);
-      });
-      $scope.socket.on("update_users", function(users) {
-        $scope.users = users;
-        $scope.$digest();
-        return console.log($scope.users);
-      });
-      $scope.socket.on('disconnect', function() {
-        $scope.recieve_message = {
-          source: 'server',
-          message: 'disconnect'
-        };
-        return $scope.$digest();
-      });
-      return $scope.socket.on('get_message', function(message) {
-        $scope.recieve_message = message;
-        return $scope.$digest();
-      });
+      socket = $connect.connect();
+      return bind_events(socket);
     }
   };
+  bind_events = function(socket) {
+    socket.on('connect', function() {
+      console.log('connected');
+      return $user.auto_detect();
+    });
+    $scope.socket.on("update_users", function(users) {
+      $scope.users = users;
+      $scope.$digest();
+      return console.log($scope.users);
+    });
+    $scope.socket.on('disconnect', function() {
+      $scope.recieve_message = {
+        source: 'server',
+        message: 'disconnect'
+      };
+      return $scope.$digest();
+    });
+    return $scope.socket.on('get_message', function(message) {
+      $scope.recieve_message = message;
+      return $scope.$digest();
+    });
+  };
   $scope.disconnect = function() {
-    return $scope.socket.disconnect();
+    return socket.disconnect();
+  };
+  $scope.is_connected = function() {
+    return socket.socket.connected;
   };
   $scope.send_message = function() {
-    console.log($scope.message);
-    return $scope.socket.emit("send_message", $scope.message);
+    return socket.emit("send_message", $scope.message);
   };
   window.onclose = function() {
-    $scope.socket.disconnect();
-    return delete $scope.socket;
+    return socket.disconnect();
   };
 });
