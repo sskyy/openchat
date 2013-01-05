@@ -48,10 +48,11 @@ module.exports = function(grunt) {
         var done = root.async();
         //add file first
         var addRes = spawn('git',['add','-f','*']);
+        console.log( "aaa");
         addRes.on('exit', function(code){
             done();
         });
-        console.log( "aaa");
+        
     });
     
     grunt.registerTask( 'github-commit', function(  ){
