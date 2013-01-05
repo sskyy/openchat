@@ -2,54 +2,25 @@ module.exports = function(grunt) {
     var fs = require('fs');
     var spawn = require("child_process").spawn;
     var globalConfig = require("./src/config.js");
-    var path = require('path');
     
     // Project configuration.
     grunt.initConfig({
-        meta: {
-            version: '0.1.0',
-            banner: '/*! PROJECT_NAME - v<%= meta.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* http://PROJECT_WEBSITE/\n' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        'YOUR_NAME; Licensed MIT */'
-        },
-        lint: {
-            files: ['grunt.js', 'src/**/*.js', 'test/**/*.js']
-        },
-        qunit: {
-            files: ['test/**/*.html']
-        },
-        min: {
-            dist: {
-                src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-                dest: 'dist/FILE_NAME.min.js'
-            }
-        },
         watch: {
             src : {
-                files : ['src/client/*.coffee','src/client/*.html'],
-                tasks : ['build-openchat']
+                files : ['src/client/*.coffee','src/client/*.html','src/config.js'],
+                tasks : ['build-openchat', 'coffee']
             }
         },
-        jshint: {
-            options: {
-                curly: true,
-                eqeqeq: true,
-                immed: true,
-                latedef: true,
-                newcap: true,
-                noarg: true,
-                sub: true,
-                undef: true,
-                boss: true,
-                eqnull: true,
-                browser: true
-            },
-            globals: {}
-        },
-        uglify: {}
+        coffee : {
+            compile:{
+                files:{
+                    './build/client/openchat.js':['./build/client/openchat.coffee']
+                }
+            }
+        }
     });
+    
+    grunt.loadNpmTasks("grunt-contrib-coffee");
     
     grunt.registerTask("build-openchat", function(){
         //concat coffee file
@@ -59,15 +30,10 @@ module.exports = function(grunt) {
             'src/client/events.coffee',
         ];
         var openchatFileContent = concat( files, coffee_template );
-//        var openchatFileContent = concat( files);
-        fs.writeFileSync('src/client/openchat.coffee', openchatFileContent, 'utf8' );
-        
-        //build openchat.js!
-        console.log( path.dirname('./'));
-        spawn("coffee",['-c','./src/client/openchat.coffee']);
+        fs.writeFileSync('build/client/openchat.coffee', openchatFileContent, 'utf8' );
         
         //build openchat_runner.html
-        fs.writeFileSync( './src/client/openchat_runner.html',
+        fs.writeFileSync( './build/client/openchat_runner.html',
             grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html').toString(), globalConfig) )
     });
     
