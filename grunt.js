@@ -52,38 +52,30 @@ module.exports = function(grunt) {
         //add file first
         var addRes = spawn('git',['add','-f','*']);
         addRes.on('exit', function(code){
-            if( code == 0 ){
-                var message = fs.readFileSync('./src/github.message');
-                var command = ['git', ['commit', '-a', '-m', message] ];
-        
-                var result = spawn( command[0], command[1] );
-                result.stdout.setEncoding('utf8');
-                result.stdout.on("data", function(data){
-                    console.log( "commit data", data); 
-                });
-                result.stderr.setEncoding('utf8');
-                result.stderr.on("data", function(err){
-                    console.log("commit err", err); 
-                });
-        
-                result.on('exit', function(code){
-                    console.log('git commit leave with code', code);
-                    if( root.args.length > 0 && code==0){
-                        console.log( root.args, code );
-                        grunt.task.run( 'github-push' );
-                    }else{
-                        console.log( root.args, code );
-                        done();
-                    }
-                });
-            }else{
+            if( code!= 0 ){
                 done();
             }
+            var message = fs.readFileSync('./src/github.message');
+            var command = ['git', ['commit', '-a', '-m', message] ];
+        
+            var result = spawn( command[0], command[1] );
+            result.stdout.setEncoding('utf8');
+            result.stdout.on("data", function(data){
+                console.log( "commit data", data); 
+            });
+            result.stderr.setEncoding('utf8');
+            result.stderr.on("data", function(err){
+                console.log("commit err", err); 
+            });
+        
+            result.on('exit', function(code){
+                console.log('git commit leave with code', code);
+                if(code !=0 || this.args.length==0){
+                    done();
+                }
+                grunt.task.run( 'github-push' );
+            });
         });
-        
-        
-        
-        
     });
     
     grunt.registerTask('github-push', function(){
@@ -95,6 +87,7 @@ module.exports = function(grunt) {
         //        }
         var result = spawn( command[0], command[1] );
         result.stdout.setEncoding('utf8');
+        console.log( "data" );
         result.stdout.on('data', function(data){
             console.log('data:', data);
         })
