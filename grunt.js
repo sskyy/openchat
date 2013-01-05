@@ -43,39 +43,42 @@ module.exports = function(grunt) {
     //ÉÏ´«µ½github
     });
     
-    
+    grunt.registerTask('github-add', function(){
+        var root = this;
+        var done = root.async();
+        //add file first
+        var addRes = spawn('git',['add','-f','*']);
+        addRes.on('exit', function(code){
+            done();
+        });
+    });
     
     grunt.registerTask( 'github-commit', function(  ){
         var root = this;
         var done = root.async();
         
-        //add file first
-        var addRes = spawn('git',['add','-f','*']);
-        addRes.on('exit', function(code){
-            if( code!= 0 ){
+        grunt.task.run('github-add');
+        
+        var message = fs.readFileSync('./src/github.message');
+        var command = ['git', ['commit', '-a', '-m', message] ];
+        
+        var result = spawn( command[0], command[1] );
+        result.stdout.setEncoding('utf8');
+        result.stdout.on("data", function(data){
+            console.log( "commit data", data); 
+        });
+        result.stderr.setEncoding('utf8');
+        result.stderr.on("data", function(err){
+            console.log("commit err", err); 
+        });
+        
+        result.on('exit', function(code){
+            console.log('git commit leave with code', code);
+            if(code !=0 || this.args==[]){
                 done();
             }
-            var message = fs.readFileSync('./src/github.message');
-            var command = ['git', ['commit', '-a', '-m', message] ];
-        
-            var result = spawn( command[0], command[1] );
-            result.stdout.setEncoding('utf8');
-            result.stdout.on("data", function(data){
-                console.log( "commit data", data); 
-            });
-            result.stderr.setEncoding('utf8');
-            result.stderr.on("data", function(err){
-                console.log("commit err", err); 
-            });
-        
-            result.on('exit', function(code){
-                console.log('git commit leave with code', code);
-                if(code !=0 || this.args==[]){
-                    done();
-                }
-                console.log( "aaa");
-                grunt.task.run( 'github-push' );
-            });
+            console.log( "aaa");
+            grunt.task.run( 'github-push' );
         });
     });
     
