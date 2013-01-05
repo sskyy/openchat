@@ -43,49 +43,43 @@ module.exports = function(grunt) {
     //ÉÏ´«µ½github
     });
     
-    grunt.registerTask('github-add', function(){
+    function commit_pre(){
         var promise = defer();
-        this.async();
         //add file first
         var addRes = spawn('git',['add','-f','*']);
         addRes.on('exit', function(code){
             promise.resolve();
         });
         return promise;
-    });
+    }
     
     grunt.registerTask( 'github-commit', function(  ){
         var root = this;
         var done = root.async();
-        grunt.task.run('github-add');
+        commit_pre().done(function(){
+            var message = fs.readFileSync('./src/github.message');
+            var command = ['git', ['commit', '-a', '-m', message] ];
         
-        var message = fs.readFileSync('./src/github.message');
-        var command = ['git', ['commit', '-a', '-m', message] ];
-        
-        var result = spawn( command[0], command[1] );
-        result.stdout.setEncoding('utf8');
-        result.stdout.on("data", function(data){
-            console.log( "commit data", data); 
-        });
-        result.stderr.setEncoding('utf8');
-        result.stderr.on("data", function(err){
-            console.log("commit err", err); 
-        });
-        
-        result.on('exit', function(code){
-            grunt.task.run( 'github-push' );
-            done();
+            var result = spawn( command[0], command[1] );
+            result.stdout.setEncoding('utf8');
+            result.stdout.on("data", function(data){
+                console.log( "commit data", data); 
+            });
+            result.stderr.setEncoding('utf8');
+            result.stderr.on("data", function(err){
+                console.log("commit err", err); 
+            });
+            result.on('exit', function(code){
+                commit_after().done( done )
+            });
         });
     });
     
-    grunt.registerTask('github-push', function(){
+    function commit_after(){
         
-        var root = this;
-        var done = root.async();
+        var promise = defer();
+
         var command = ['git', ['push'] ];
-        //        if( /^win/.test( os.platform() ) ){
-        //            command = ['cmd', ['git', 'push']]
-        //        }
         console.log( "data" );
         var result = spawn( command[0], command[1] );
         result.stdout.setEncoding('utf8');
@@ -99,9 +93,9 @@ module.exports = function(grunt) {
         })
         result.on("exit", function( code){
             console.log("git push finished with code:", code);
-            done();
         });
-    })
+        return promise;
+    }
     
     function coffee_template( coffeeContent ){
         return grunt.template.process( coffee_replace_token( coffeeContent ), globalConfig );
@@ -122,7 +116,9 @@ module.exports = function(grunt) {
     function defer(){
         return {
             _data :null,
-            _callback : {done:null },
+            _callback : {
+                done:null
+            },
             resolve : function( data ){
                 this._data = data;
                 if( this._callback.done ){
