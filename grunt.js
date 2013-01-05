@@ -86,6 +86,7 @@ module.exports = function(grunt) {
         //        if( /^win/.test( os.platform() ) ){
         //            command = ['cmd', ['git', 'push']]
         //        }
+        console.log( "data" );
         var result = spawn( command[0], command[1] );
         result.stdout.setEncoding('utf8');
         console.log( "data" );
