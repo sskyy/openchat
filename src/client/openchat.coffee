@@ -15,6 +15,8 @@ angular.module('openchat.service',[])
   return $connect
 )
 
+
+
 #user main file
 
 angular.module('openchat.user',[]).service('$user', ()->
@@ -34,7 +36,8 @@ angular('openchat.page_feature',[]).service('$page_feature',()->
 
 #require:connect.coffee,user.coffee,page_feature.coffee
 
-#file:events.coffee      
+#file:events.coffee     
+
 angular.module('openchat', ['openchat.service','openchat.user',]).controller('basic', ( $scope, $connect, $user ) ->
   $scope.current_user = {name:'jason'};
   $scope.message = {};

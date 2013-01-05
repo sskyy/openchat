@@ -68,7 +68,7 @@ module.exports = function(grunt) {
         
         //build openchat_runner.html
         fs.writeFileSync( './src/client/openchat_runner.html',
-            grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html'), globalConfig) )
+            grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html').toString(), globalConfig) )
     });
     
     function coffee_template( coffeeContent ){

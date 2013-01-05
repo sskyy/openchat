@@ -1,7 +1,7 @@
 
 angular.module('openchat.service', []).service('$connect', function() {
   var $connect, url;
-  url = '<%= config.host%>';
+  url = 'jieq1u3u19.elb7.stacklab.org';
   if (typeof io === void 0) {
     console.log("socket.io not exist");
     return {};

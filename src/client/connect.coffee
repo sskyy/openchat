@@ -14,3 +14,5 @@ angular.module('openchat.service',[])
     
   return $connect
 )
+
+
