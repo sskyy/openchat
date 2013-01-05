@@ -77,12 +77,12 @@ module.exports = function(grunt) {
             if(code !=0 || this.args==[]){
                 done();
             }
-            console.log( "aaa");
             grunt.task.run( 'github-push' );
         });
     });
     
     grunt.registerTask('github-push', function(){
+        console.log( "aaa");
         var root = this;
         var done = root.async();
         var command = ['git', ['push'] ];
