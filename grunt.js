@@ -44,21 +44,20 @@ module.exports = function(grunt) {
     });
     
     grunt.registerTask('github-add', function(){
-        var root = this;
-        var done = root.async();
+        var promise = defer();
         //add file first
         var addRes = spawn('git',['add','-f','*']);
         addRes.on('exit', function(code){
-            done();
+            promise.resolve();
         });
-        
+        return promise;
     });
     
     grunt.registerTask( 'github-commit', function(  ){
         var root = this;
         var done = root.async();
         
-        console.log( grunt.task.run('github-add') );
+        console.log( grunt.task.run('github-add')  );
         
         var message = fs.readFileSync('./src/github.message');
         var command = ['git', ['commit', '-a', '-m', message] ];
@@ -121,6 +120,23 @@ module.exports = function(grunt) {
             output += walk ? walk( fs.readFileSync( files[i], 'utf8' ) ) : fs.readFileSync( files[i], 'utf8' )
         }
         return output;
+    }
+    
+    function defer(){
+        return {
+            _data :null,
+            _callback : {done:null },
+            resolve : function( data ){
+                this._data = data;
+                this._callback.done( data );
+            },
+            done : function( callback ){
+                this._callback.done = callback;
+                if( this._data ){
+                    callback( this._data );
+                }
+            }
+        }
     }
   
   
