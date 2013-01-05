@@ -5,7 +5,7 @@ var spawn = require('child_process').spawn;
 exports.listen = function( server ){
     server.handlers.POST.registerPath.call(server.handlers.POST,"/github/update", function( req, res ){
         console.log( "github update call.");
-        var cmd = spawn('cmd', ['/opt/openchat','sudo git pull']);
+        var cmd = spawn('sudo', ['git','pull'], {'cwd':'/opt/openchat'});
         
         cmd.stdout.on("data",function(data){
             res.writeHead(200, {
@@ -39,7 +39,7 @@ exports.listen = function( server ){
     })
     server.handlers.GET.registerPath.call(server.handlers.GET,"/github/update", function( req, res ){
         console.log( "github update call.");
-        var cmd = spawn('cmd', ['/opt/openchat','sudo git pull']);
+        var cmd = spawn('sudo', ['git','pull'], {'cwd':'/opt/openchat'});
         
         cmd.stdout.on("data",function(data){
             res.writeHead(200, {
