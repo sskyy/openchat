@@ -11,7 +11,7 @@ angular.module('openchat', []).controller('basic', function($scope) {
         return $scope.socket.socket.connect();
       }
     } else {
-      url = "http://localhost:8000";
+      url = "http://42.96.146.173:8000";
       $scope.socket = io.connect(url);
       console.log('begin connect', io);
       $scope.socket.on('connect', function() {

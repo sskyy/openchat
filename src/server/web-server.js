@@ -248,4 +248,5 @@ StaticServlet.prototype.writeDirectoryIndex_ = function(req, res, path, files) {
 
 
 // Must be last,
-main(process.argv);
+exports.start = main;
+main( process.argv );

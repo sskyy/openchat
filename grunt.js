@@ -49,14 +49,23 @@ module.exports = function(grunt) {
       },
       globals: {}
     },
-    uglify: {},
-    server: {
-        port: 8000,
-        base: '.'
-    }
+    uglify: {}
   });
 
   // Default task.
   grunt.registerTask('default', 'lint qunit concat min');
+  
+  //server
+//  var server = require("./src/server/web-server.js");
+//  grunt.registerTask('server', 'start a custom server', function(){
+//      server.start( process.argv );
+//  });
+
+//easy server
+//    var connect = require('connect');
+//    grunt.registerTask('server', 'Start a custom static web server.', function() {
+//      grunt.log.writeln('Starting static web server on port 8000.');
+//      connect(connect.static('./')).listen(8000);
+//    });
 
 };
