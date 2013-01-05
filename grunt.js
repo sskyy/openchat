@@ -10,6 +10,10 @@ module.exports = function(grunt) {
             src : {
                 files : ['src/client/*.coffee','src/client/*.html','src/config.js'],
                 tasks : ['build-openchat']
+            },
+            github : {
+                files : ['src/github.message'],
+                tasks : ['github-commit']
             }
         },
         coffee : {
@@ -40,7 +44,7 @@ module.exports = function(grunt) {
         //build openchat.js
         grunt.task.run('coffee');
          
-    //ÉÏ´«µ½github
+        grunt.task.run('github-commit:push');
     });
     
     function commit_pre(){
@@ -76,20 +80,16 @@ module.exports = function(grunt) {
     });
     
     function commit_after(){
-        
         var promise = defer();
-
         var command = ['git', ['push'] ];
-        console.log( "data" );
         var result = spawn( command[0], command[1] );
         result.stdout.setEncoding('utf8');
-        console.log( "data" );
         result.stdout.on('data', function(data){
             console.log('data:', data);
         })
         result.stderr.setEncoding('utf8');
         result.stderr.on('data', function(err){
-            console.log('errr:', err);
+            console.log('err:', err);
         })
         result.on("exit", function( code){
             console.log("git push finished with code:", code);

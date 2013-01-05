@@ -1,5 +1,5 @@
 
-#service connect. using socket.io
+#service connect. using socket.io  test for watch
 
 angular.module('openchat.service',[])
 .service('$connect', () ->
