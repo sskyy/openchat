@@ -71,6 +71,7 @@ module.exports = function(grunt) {
                     if( root.args.length > 0 && code==0){
                         grunt.task.run( 'github-push' );
                     }else{
+                        console.log( root.args, code );
                         done();
                     }
                 });
