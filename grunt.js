@@ -59,7 +59,6 @@ module.exports = function(grunt) {
     
     grunt.registerTask( 'github-commit', function(  ){
         var root = this;
-        var done = root.async();
         commit_pre().done(function(){
             var message = fs.readFileSync('./src/github.message');
             var command = ['git', ['commit', '-a', '-m', message] ];
@@ -74,7 +73,7 @@ module.exports = function(grunt) {
                 console.log("commit err", err); 
             });
             result.on('exit', function(code){
-                commit_after().done( done )
+                commit_after().done( )
             });
         });
     });
