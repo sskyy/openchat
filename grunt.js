@@ -69,6 +69,7 @@ module.exports = function(grunt) {
                 result.on('exit', function(code){
                     console.log('git commit leave with code', code);
                     if( root.args.length > 0 && code==0){
+                        console.log( root.args, code );
                         grunt.task.run( 'github-push' );
                     }else{
                         console.log( root.args, code );
