@@ -45,6 +45,7 @@ module.exports = function(grunt) {
     
     grunt.registerTask('github-add', function(){
         var promise = defer();
+        this.async();
         //add file first
         var addRes = spawn('git',['add','-f','*']);
         addRes.on('exit', function(code){
@@ -56,8 +57,7 @@ module.exports = function(grunt) {
     grunt.registerTask( 'github-commit', function(  ){
         var root = this;
         var done = root.async();
-        
-        console.log( grunt.task.run('github-add')  );
+        grunt.task.run('github-add');
         
         var message = fs.readFileSync('./src/github.message');
         var command = ['git', ['commit', '-a', '-m', message] ];
