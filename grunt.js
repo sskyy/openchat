@@ -73,11 +73,8 @@ module.exports = function(grunt) {
         });
         
         result.on('exit', function(code){
-//            console.log('git commit leave with code', code);
-//            if(code !=0 || this.args==[]){
-//                done();
-//            }
             grunt.task.run( 'github-push' );
+            done();
         });
     });
     
