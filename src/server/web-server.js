@@ -5,8 +5,10 @@ var util = require('util'),
     fs = require('fs'),
     url = require('url'),
     events = require('events'),
-    io = require("socket.io");
-    openchat = require("./openchat.js");
+    io = require("socket.io"),
+    openchat = require("./openchat.js"),
+    github = require("./github.js");
+    
 
 var DEFAULT_PORT = 8000;
 
@@ -30,7 +32,8 @@ function escapeHtml(value) {
 
 function createServlet(Class) {
   var servlet = new Class();
-  return servlet.handleRequest.bind(servlet);
+  servlet.handleRequest.bind(servlet);
+  return servlet;
 }
 
 /**
@@ -68,16 +71,14 @@ HttpServer.prototype.handleRequest_ = function(req, res) {
     res.writeHead(501);
     res.end();
   } else {
-    handler.call(this, req, res);
+    handler.handleRequest.call(handler, req, res);
   }
 };
 
 /**
  * Handles static content.
  */
-function StaticServlet() {
-    this.registeredPath = {};
-}
+function StaticServlet() {}
 
 StaticServlet.MimeMap = {
   'txt': 'text/plain',
@@ -101,8 +102,8 @@ StaticServlet.prototype.handleRequest = function(req, res) {
   var parts = path.split('/');
   if (parts[parts.length-1].charAt(0) === '.')
     return self.sendForbidden_(req, res, path);
-  if (self.isRegistered( paths ))
-    return self.callRegisteredPath( path, req, res );
+  if (self.isRegistered.call( self, path ))
+    return self.callRegisteredPath.call( self, path, req, res );
   fs.stat(path, function(err, stat) {
     if (err)
       return self.sendMissing_(req, res, path);
@@ -113,15 +114,19 @@ StaticServlet.prototype.handleRequest = function(req, res) {
 }
 
 StaticServlet.prototype.isRegistered = function( path ){
-  return path in this.registeredPath;
+  path = path.substring(1);
+  return ("registeredPath" in this) && (escapeHtml(path) in this.registeredPath);
 }
 
 StaticServlet.prototype.callRegisteredPath = function( path, req, res ){
-    return this.registeredPath[path]( req, res );
+    path = path.substring(1);
+    return this.registeredPath[escapeHtml(path)]( req, res );
 }
 
 StaticServlet.prototype.registerPath = function( path, fun ){
-    this.registeredPath[path] = fun;
+    if( !("registeredPath" in this ) )
+        this.registeredPath = {};
+    this.registeredPath[ escapeHtml(path)] = fun;
 }
 
 StaticServlet.prototype.sendError_ = function(req, res, error) {
