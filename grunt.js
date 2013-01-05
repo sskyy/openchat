@@ -43,8 +43,6 @@ module.exports = function(grunt) {
             
         //build openchat.js
         grunt.task.run('coffee');
-         
-        grunt.task.run('github-commit:push');
     });
     
     function commit_pre(){
@@ -58,7 +56,6 @@ module.exports = function(grunt) {
     }
     
     grunt.registerTask( 'github-commit', function(  ){
-        var root = this;
         commit_pre().done(function(){
             var message = fs.readFileSync('./src/github.message');
             var command = ['git', ['commit', '-a', '-m', message] ];
