@@ -1,5 +1,5 @@
 
-#require:connect.coffee,user.coffee
+#require:connect.coffee,user.coffee,page_feature.coffee
 
 #file:events.coffee      
 angular.module('openchat', ['openchat.service','openchat.user',]).controller('basic', ( $scope, $connect, $user ) ->

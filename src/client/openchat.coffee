@@ -32,7 +32,7 @@ angular('openchat.page_feature',[]).service('$page_feature',()->
   return $page_feature;
 )
 
-#require:connect.coffee,user.coffee
+#require:connect.coffee,user.coffee,page_feature.coffee
 
 #file:events.coffee      
 angular.module('openchat', ['openchat.service','openchat.user',]).controller('basic', ( $scope, $connect, $user ) ->
