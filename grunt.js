@@ -73,6 +73,7 @@ module.exports = function(grunt) {
                 if(code !=0 || this.args!=[]){
                     done();
                 }
+                console.log( "aaa");
                 grunt.task.run( 'github-push' );
             });
         });
