@@ -125,7 +125,7 @@ module.exports = function(grunt) {
             _callback : {done:null },
             resolve : function( data ){
                 this._data = data;
-                if( this._callback ){
+                if( this._callback.done ){
                     this._callback.done( data );
                 }
             },
