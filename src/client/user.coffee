@@ -1,7 +1,7 @@
 
 #user main file
 
-angular.module('openchat.user',[]).service('$user', ()->
+angular.module('openchat.service').service('$user', ()->
 
   $user = {};
   $user.auto_detect = () ->

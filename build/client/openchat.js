@@ -14,7 +14,7 @@
     return $connect;
   });
 
-  angular.module('openchat.user', []).service('$user', function() {
+  angular.module('openchat.service').service('$user', function() {
     var $user;
     $user = {};
     $user.auto_detect = function() {
@@ -23,7 +23,7 @@
     return $user;
   });
 
-  angular('openchat.page_feature', []).service('$page_feature', function() {
+  angular.module('openchat.service').service('$page_feature', function() {
     var $page_feature;
     $page_feature = {};
     return $page_feature;

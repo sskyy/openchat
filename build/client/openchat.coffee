@@ -19,7 +19,7 @@ angular.module('openchat.service',[])
 
 #user main file
 
-angular.module('openchat.user',[]).service('$user', ()->
+angular.module('openchat.service').service('$user', ()->
 
   $user = {};
   $user.auto_detect = () ->
@@ -29,7 +29,7 @@ angular.module('openchat.user',[]).service('$user', ()->
   
 )
 #detect page 
-angular('openchat.page_feature',[]).service('$page_feature',()->
+angular.module('openchat.service').service('$page_feature',()->
   $page_feature = {};
   return $page_feature;
 )
