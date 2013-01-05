@@ -1,4 +1,6 @@
 #openchat ·þÎñÆ÷¶ËÂß¼­
+io = require 'socket.io'
+
 data = 
   users : {}
   connections : {}
@@ -34,10 +36,10 @@ single_socket_event = ( socket, data, io ) ->
       )
     
     
-exports.bind_openchat_event = ( io ) ->
-  io.sockets.on 'connection', ( socket ) -> 
-    single_socket_event( socket, data, io );
-  
+exports.listen = ( server ) ->
+  io.listen( server ).sockets.on( 'connection', ( socket ) -> 
+    single_socket_event( socket, data, io )
+  )
 
           
       

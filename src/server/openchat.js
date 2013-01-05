@@ -1,4 +1,6 @@
-var data, single_socket_event;
+var data, io, single_socket_event;
+
+io = require('socket.io');
 
 data = {
   users: {},
@@ -42,8 +44,8 @@ single_socket_event = function(socket, data, io) {
   });
 };
 
-exports.bind_openchat_event = function(io) {
-  return io.sockets.on('connection', function(socket) {
+exports.listen = function(server) {
+  return io.listen(server).sockets.on('connection', function(socket) {
     return single_socket_event(socket, data, io);
   });
 };

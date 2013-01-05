@@ -13,10 +13,12 @@ var DEFAULT_PORT = 8000;
 function main(argv) {
   var server = new HttpServer({
     'GET': createServlet(StaticServlet),
+    'POST': createServlet(StaticServlet),
     'HEAD': createServlet(StaticServlet)
   });
   server.start(Number(argv[2]) || DEFAULT_PORT);
-  openchat.bind_openchat_event( io.listen(server.server) );
+  openchat.listen( server );
+  github.listen( server );
 }
 
 function escapeHtml(value) {
@@ -45,7 +47,7 @@ function HttpServer(handlers) {
 HttpServer.prototype.start = function(port) {
   this.port = port;
   this.server.listen(port);
-  util.puts('Http Server running at http://localhost:' + port + '/');
+  util.puts('Http Server running on port:' + port + '/');
 };
 
 HttpServer.prototype.parseUrl_ = function(urlString) {
@@ -73,7 +75,9 @@ HttpServer.prototype.handleRequest_ = function(req, res) {
 /**
  * Handles static content.
  */
-function StaticServlet() {}
+function StaticServlet() {
+    this.registeredPath = {};
+}
 
 StaticServlet.MimeMap = {
   'txt': 'text/plain',
@@ -97,6 +101,8 @@ StaticServlet.prototype.handleRequest = function(req, res) {
   var parts = path.split('/');
   if (parts[parts.length-1].charAt(0) === '.')
     return self.sendForbidden_(req, res, path);
+  if (self.isRegistered( paths ))
+    return self.callRegisteredPath( path, req, res );
   fs.stat(path, function(err, stat) {
     if (err)
       return self.sendMissing_(req, res, path);
@@ -104,6 +110,18 @@ StaticServlet.prototype.handleRequest = function(req, res) {
       return self.sendDirectory_(req, res, path);
     return self.sendFile_(req, res, path);
   });
+}
+
+StaticServlet.prototype.isRegistered = function( path ){
+  return path in this.registeredPath;
+}
+
+StaticServlet.prototype.callRegisteredPath = function( path, req, res ){
+    return this.registeredPath[path]( req, res );
+}
+
+StaticServlet.prototype.registerPath = function( path, fun ){
+    this.registeredPath[path] = fun;
 }
 
 StaticServlet.prototype.sendError_ = function(req, res, error) {
@@ -245,8 +263,9 @@ StaticServlet.prototype.writeDirectoryIndex_ = function(req, res, path, files) {
 };
 
 
-
-
-// Must be last,
-exports.start = main;
-main( process.argv );
+//命令行调用则直接执行
+if( !module.parrent ){
+  main( process.argv );
+}else{
+  exports.start = main;
+}
