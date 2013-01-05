@@ -45,7 +45,7 @@ single_socket_event = function(socket, data, io) {
 };
 
 exports.listen = function(server) {
-  return io.listen(server).sockets.on('connection', function(socket) {
+  return io.listen(server.server).sockets.on('connection', function(socket) {
     return single_socket_event(socket, data, io);
   });
 };

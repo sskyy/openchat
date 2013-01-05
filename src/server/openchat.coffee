@@ -37,7 +37,7 @@ single_socket_event = ( socket, data, io ) ->
     
     
 exports.listen = ( server ) ->
-  io.listen( server ).sockets.on( 'connection', ( socket ) -> 
+  io.listen( server.server ).sockets.on( 'connection', ( socket ) -> 
     single_socket_event( socket, data, io )
   )
 
