@@ -48,7 +48,6 @@ module.exports = function(grunt) {
         var done = root.async();
         //add file first
         var addRes = spawn('git',['add','-f','*']);
-        console.log( "aaa");
         addRes.on('exit', function(code){
             done();
         });
@@ -59,7 +58,7 @@ module.exports = function(grunt) {
         var root = this;
         var done = root.async();
         
-        grunt.task.run('github-add');
+//        grunt.task.run('github-add');
         
         var message = fs.readFileSync('./src/github.message');
         var command = ['git', ['commit', '-a', '-m', message] ];
