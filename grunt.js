@@ -26,9 +26,9 @@ module.exports = function(grunt) {
     grunt.registerTask("build-openchat", function(){
         //concat coffee file
         var files = ['src/client/connect.coffee',
-            'src/client/user.coffee',
-            'src/client/page_feature.coffee',
-            'src/client/events.coffee',
+        'src/client/user.coffee',
+        'src/client/page_feature.coffee',
+        'src/client/events.coffee',
         ];
         var openchatFileContent = concat( files, coffee_template );
         fs.writeFileSync('build/client/openchat.coffee', openchatFileContent, 'utf8' );
@@ -37,38 +37,49 @@ module.exports = function(grunt) {
         fs.writeFileSync( './build/client/openchat_runner.html',
             grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html').toString(), globalConfig) )
             
-         //build openchat.js
-         grunt.task.run('coffee');
+        //build openchat.js
+        grunt.task.run('coffee');
          
-         //上传到github
+    //上传到github
     });
+    
+    
     
     grunt.registerTask( 'github-commit', function(  ){
         var root = this;
         var done = root.async();
-        var message = fs.readFileSync('./src/github.message');
-        var command = ['git', ['commit', '-a', '-m', message] ];
-//        if( /^win/.test( os.platform() ) ){
-//            command = ['cmd', ['git', 'commit', '-a', '-m', message ] ];
-//        }
         
-        var result = spawn( command[0], command[1] );
-        result.stdout.setEncoding('utf8');
-        result.stdout.on("data", function(data){
-           console.log( "commit data", data); 
-        });
-        result.stderr.setEncoding('utf8');
-        result.stderr.on("data", function(err){
-           console.log("commit err", err); 
+        //add file first
+        var addRes = spawn('git',['add','-f','*']);
+        addRes.on('exit', function(code){
+            if( code == 0 ){
+                var message = fs.readFileSync('./src/github.message');
+                var command = ['git', ['commit', '-a', '-m', message] ];
+        
+                var result = spawn( command[0], command[1] );
+                result.stdout.setEncoding('utf8');
+                result.stdout.on("data", function(data){
+                    console.log( "commit data", data); 
+                });
+                result.stderr.setEncoding('utf8');
+                result.stderr.on("data", function(err){
+                    console.log("commit err", err); 
+                });
+        
+                result.on('exit', function(code){
+                    console.log('git commit leave with code', code);
+                    if( root.args.length > 0 && code==0){
+                        grunt.task.run( 'github-push' );
+                    }else{
+                        done();
+                    }
+                });
+            }else{
+                done();
+            }
         });
         
-        result.on('exit', function(code){
-           console.log('git commit leave with code', code);
-           if( root.args.length > 0 ){
-               grunt.task.run( 'github-push' );
-           }
-           done();
-        });
+        
         
         
     });
@@ -77,9 +88,9 @@ module.exports = function(grunt) {
         var root = this;
         var done = root.async();
         var command = ['git', ['push'] ];
-//        if( /^win/.test( os.platform() ) ){
-//            command = ['cmd', ['git', 'push']]
-//        }
+        //        if( /^win/.test( os.platform() ) ){
+        //            command = ['cmd', ['git', 'push']]
+        //        }
         var result = spawn( command[0], command[1] );
         result.stdout.setEncoding('utf8');
         result.stdout.on('data', function(data){
@@ -90,8 +101,8 @@ module.exports = function(grunt) {
             console.log('errr:', err);
         })
         result.on("exit", function( code){
-           console.log("git push finished with code:", code);
-           done();
+            console.log("git push finished with code:", code);
+            done();
         });
     })
     
@@ -112,6 +123,6 @@ module.exports = function(grunt) {
     }
   
   
-      // Default task.
+    // Default task.
     grunt.registerTask('default', 'lint qunit concat min');
 };
