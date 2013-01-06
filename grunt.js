@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
     var fs = require('fs');
     var spawn = require("child_process").spawn;
-    var globalConfig = require("./src/config.js");
+    var globalConfig = require("./src/grunt/config.js");
     var os = require("os");
     
     // Project configuration.
@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                 tasks : ['build-openchat']
             },
             github : {
-                files : ['src/github.message'],
+                files : ['src/grunt/github.message'],
                 tasks : ['github-commit']
             }
         },
@@ -25,6 +25,7 @@ module.exports = function(grunt) {
         }
     });
     
+    grunt.loadTasks('./src/grunt/tasks');
     grunt.loadNpmTasks("grunt-contrib-coffee");
     
     grunt.registerTask("build-openchat", function(){
@@ -45,53 +46,6 @@ module.exports = function(grunt) {
         grunt.task.run('coffee');
     });
     
-    function commit_pre(){
-        var promise = defer();
-        //add file first
-        var addRes = spawn('git',['add','-f','*']);
-        addRes.on('exit', function(code){
-            promise.resolve();
-        });
-        return promise;
-    }
-    
-    grunt.registerTask( 'github-commit', function(  ){
-        commit_pre().done(function(){
-            var message = fs.readFileSync('./src/github.message');
-            var command = ['git', ['commit', '-a', '-m', message] ];
-        
-            var result = spawn( command[0], command[1] );
-            result.stdout.setEncoding('utf8');
-            result.stdout.on("data", function(data){
-                console.log( "commit data", data); 
-            });
-            result.stderr.setEncoding('utf8');
-            result.stderr.on("data", function(err){
-                console.log("commit err", err); 
-            });
-            result.on('exit', function(code){
-                commit_after().done( )
-            });
-        });
-    });
-    
-    function commit_after(){
-        var promise = defer();
-        var command = ['git', ['push'] ];
-        var result = spawn( command[0], command[1] );
-        result.stdout.setEncoding('utf8');
-        result.stdout.on('data', function(data){
-            console.log('data:', data);
-        })
-        result.stderr.setEncoding('utf8');
-        result.stderr.on('data', function(err){
-            console.log('err:', err);
-        })
-        result.on("exit", function( code){
-            console.log("git push finished with code:", code);
-        });
-        return promise;
-    }
     
     function coffee_template( coffeeContent ){
         return grunt.template.process( coffee_replace_token( coffeeContent ), globalConfig );
@@ -109,28 +63,4 @@ module.exports = function(grunt) {
         return output;
     }
     
-    function defer(){
-        return {
-            _data :null,
-            _callback : {
-                done:null
-            },
-            resolve : function( data ){
-                this._data = data;
-                if( this._callback.done ){
-                    this._callback.done( data );
-                }
-            },
-            done : function( callback ){
-                this._callback.done = callback;
-                if( this._data ){
-                    callback( this._data );
-                }
-            }
-        }
-    }
-  
-  
-    // Default task.
-    grunt.registerTask('default', 'lint qunit concat min');
 };
