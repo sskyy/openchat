@@ -2,9 +2,11 @@ module.exports = function( grunt ){
     var spawn = require('child_process').spawn;
     var fs = require('fs');
     grunt.registerTask( 'github-commit', function(){
-        console.log( grunt );
-        this.async();
-        console.log( this );
+        if( in_array("async", this.args) ){
+            //run from command
+            console.log( "async");
+            var done = this.async();
+        }
         commit_pre().done(function(){
             var message = fs.readFileSync('./src/grunt/github.message');
             var command = ['git', ['commit', '-a', '-m', message] ];
@@ -19,7 +21,9 @@ module.exports = function( grunt ){
                 console.log("commit err", err); 
             });
             result.on('exit', function(code){
-                commit_after().done( done );
+                if( in_array("push", this.args ) ){
+                    commit_after().done( (done||null ) );
+                }
             });
         });
     });
@@ -71,6 +75,14 @@ module.exports = function( grunt ){
                 }
             }
         }
+    }
+    
+    function in_array( val, arr ){
+        for( var i in arr ){
+            if( arr[i] == val )
+                return true;
+        }
+        return false;
     }
     
     
