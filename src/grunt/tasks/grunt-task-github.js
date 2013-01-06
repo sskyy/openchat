@@ -2,7 +2,9 @@ module.exports = function( grunt ){
     var spawn = require('child_process').spawn;
     var fs = require('fs');
     grunt.registerTask( 'github-commit', function(){
-        var done = this.async();
+        console.log( grunt );
+        this.async();
+        console.log( this );
         commit_pre().done(function(){
             var message = fs.readFileSync('./src/grunt/github.message');
             var command = ['git', ['commit', '-a', '-m', message] ];
