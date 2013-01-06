@@ -13,7 +13,7 @@ module.exports = function(grunt) {
             },
             github : {
                 files : ['src/grunt/github.message'],
-                tasks : ['github-commit']
+                tasks : ['github-commit:push']
             }
         },
         coffee : {
