@@ -22,7 +22,8 @@ module.exports = function( grunt ){
             });
             result.on('exit', function(code){
                 if( in_array("push", this.args ) ){
-                    commit_after().done( (done||null ) );
+                    var arg = done||null;
+                    commit_after().done( arg );
                 }
             });
         });
