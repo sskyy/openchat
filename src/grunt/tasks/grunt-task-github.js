@@ -40,6 +40,7 @@ module.exports = function( grunt ){
     }
     
     function commit_after(){
+        console.log( "aa");
         var promise = defer();
         var command = ['git', ['push'] ];
         var result = spawn( command[0], command[1] );
