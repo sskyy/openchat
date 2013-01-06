@@ -1,0 +1,8 @@
+// main.test
+// include1.test
+// end:include1.test
+
+    // include2.test
+    // end:include2.test
+    *
+// end:main.test

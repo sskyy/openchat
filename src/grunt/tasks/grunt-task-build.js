@@ -1,13 +1,33 @@
+/**
+ * grunt task: build-openchat;
+ * used to build client/server openchat.js, openchat_runner.html
+ */
+
 module.exports = function( grunt ){
+    var globalConfig = require('../config.js');
+    var fs = require('fs');
     grunt.registerTask("build-openchat", function(){
-        //concat coffee file
-        var files = ['src/client/connect.coffee',
-            'src/client/user.coffee',
-            'src/client/page_feature.coffee',
-            'src/client/events.coffee',
-        ];
-        var openchatFileContent = concat( files, coffee_template );
-        fs.writeFileSync('build/client/openchat.coffee', openchatFileContent, 'utf8' );
+        if( in_array( 'async',this.args) ){
+            var done = this.async();
+        }
+        
+        //generate build/openchat.coffee
+        grunt.helper('include', 
+            { formats: { 
+                    '.js': '//\\{include "(.*?)"\\}',
+                    '.html': '<!--\\{include "(.*?)"\\}-->',
+                    '.coffee': '#\\{include "(.*?)"\\}'
+                },
+                include: ['./'],
+                rules: [{ src: 'src/client/openchat.coffee', dst: 'build/client/'}] },
+            function(err){
+                console.log( err);
+                //replace global values
+                fs.writeFileSync( 'build/client/openchat.coffee',
+                grunt.template.process( fs.readFileSync( 'build/client/openchat.coffee').toString(), globalConfig) )
+                
+                done && done();
+        });
         
         //build openchat_runner.html
         fs.writeFileSync( './build/client/openchat_runner.html',
@@ -22,15 +42,12 @@ module.exports = function( grunt ){
         return grunt.template.process( coffee_replace_token( coffeeContent ), globalConfig );
     }
     
-    function coffee_replace_token( content ){
-        return content;
-    }
-  
-    function concat( files, walk ){
-        var output = "";
-        for( var i in files ){
-            output += walk ? walk( fs.readFileSync( files[i], 'utf8' ) ) : fs.readFileSync( files[i], 'utf8' )
+    function in_array( val, arr ){
+        for( var i in arr ){
+            if( arr[i] == val ){
+                return true
+            }
         }
-        return output;
+        return false;
     }
 };

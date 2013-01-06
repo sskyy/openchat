@@ -1,3 +1,11 @@
+/**
+ * grunt task: github-commit
+ * suport tow options:
+ *  push: used when need to push after commit
+ *  async: used when running this task from command
+ */
+
+
 module.exports = function( grunt ){
     var spawn = require('child_process').spawn;
     var fs = require('fs');

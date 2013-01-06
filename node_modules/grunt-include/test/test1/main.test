@@ -1,0 +1,4 @@
+// main.test
+//{include "include1.test"}
+    //{include "include2.test"}*
+// end:main.test

@@ -6,6 +6,16 @@ module.exports = function(grunt) {
     
     // Project configuration.
     grunt.initConfig({
+//        concat:{
+//            openchat :{
+//                src : ['src/client/connect.coffee',
+//                'src/client/user.coffee',
+//                'src/client/page_feature.coffee',
+//                'src/client/events.coffee',
+//                ],
+//                dest : 'build/client/openchat.coffee'
+//            }
+//        },
         watch: {
             src : {
                 files : ['src/client/*.coffee','src/client/*.html','src/config.js'],
@@ -27,5 +37,6 @@ module.exports = function(grunt) {
     
     grunt.loadTasks('./src/grunt/tasks');
     grunt.loadNpmTasks("grunt-contrib-coffee");
+    grunt.loadNpmTasks("grunt-include");
     
 };

@@ -1,5 +1,5 @@
 
-#service connect. using socket.io  I found the bug
+#service connect. using socket.io 
 
 angular.module('openchat.service',[])
 .service('$connect', () ->

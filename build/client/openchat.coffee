@@ -1,5 +1,6 @@
 
-#service connect. using socket.io  I found the bug
+
+#service connect. using socket.io 
 
 angular.module('openchat.service',[])
 .service('$connect', () ->
@@ -17,6 +18,7 @@ angular.module('openchat.service',[])
 
 
 
+
 #user main file
 
 angular.module('openchat.service').service('$user', ()->
@@ -28,11 +30,13 @@ angular.module('openchat.service').service('$user', ()->
   return $user;
   
 )
+
 #detect page 
 angular.module('openchat.service').service('$page_feature',()->
   $page_feature = {};
   return $page_feature;
 )
+
 
 #require:connect.coffee,user.coffee,page_feature.coffee
 
@@ -82,3 +86,5 @@ angular.module('openchat', ['openchat.service','openchat.user',]).controller('ba
   
   return;
 )
+
+
