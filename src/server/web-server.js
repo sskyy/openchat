@@ -8,6 +8,7 @@ var util = require('util'),
     io = require("socket.io"),
     openchat = require("./openchat.js"),
     github = require("./github.js");
+    resource = require('./resource.js');
     
 
 var DEFAULT_PORT = 8000;
@@ -21,6 +22,7 @@ function main(argv) {
   server.start(Number(argv[2]) || DEFAULT_PORT);
   openchat.listen( server );
   github.listen( server );
+  resource.listen( server );
 }
 
 function escapeHtml(value) {

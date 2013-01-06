@@ -32,6 +32,12 @@ module.exports = function(grunt) {
                     './build/client/openchat.js':['./build/client/openchat.coffee']
                 }
             }
+        },
+        jsdoc : {
+            dist : {
+                src: ['src/*.js', 'test/*.js'], 
+                dest: 'doc'
+            }
         }
     });
     
