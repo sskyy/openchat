@@ -22,7 +22,7 @@ module.exports = function( grunt ){
             result.on('exit', function(code){
                 if( in_array("push", this.args ) ){
 //                    var arg = done||null;
-                    commit_after().done( done );
+                    commit_after().done(  );
                 }
             });
         });
