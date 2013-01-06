@@ -4,7 +4,6 @@ module.exports = function( grunt ){
     grunt.registerTask( 'github-commit', function(){
         if( in_array("async", this.args) ){
             //run from command
-            console.log( "async");
             var done = this.async();
         }
         commit_pre().done(function(){
@@ -22,8 +21,8 @@ module.exports = function( grunt ){
             });
             result.on('exit', function(code){
                 if( in_array("push", this.args ) ){
-                    var arg = done||null;
-                    commit_after().done( arg );
+//                    var arg = done||null;
+                    commit_after().done( done );
                 }
             });
         });
