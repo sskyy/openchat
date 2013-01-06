@@ -22,6 +22,7 @@ module.exports = function( grunt ){
             });
             result.on('exit', function(code){
                 if( in_array("push", this.args ) ){
+                    console.log( "aaa");
                     commit_after().done();
                 }
             });
