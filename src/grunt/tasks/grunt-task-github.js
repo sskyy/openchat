@@ -2,10 +2,10 @@ module.exports = function( grunt ){
     var spawn = require('child_process').spawn;
     var fs = require('fs');
     grunt.registerTask( 'github-commit', function(){
-        var done = this.async();
-        if( in_array("async", this.args) ){
+        var root = this;
+        if( in_array("async", root.args) ){
             //run from command
-            
+            var done = root.async();
         }
         commit_pre().done(function(){
             var message = fs.readFileSync('./src/grunt/github.message');
@@ -21,9 +21,8 @@ module.exports = function( grunt ){
                 console.log("commit err", err); 
             });
             result.on('exit', function(code){
-                if( in_array("push", this.args ) ){
-                    console.log( "aaa");
-                    commit_after().done();
+                if( in_array("push", root.args ) ){
+                    commit_after().done( done||null );
                 }
             });
         });
