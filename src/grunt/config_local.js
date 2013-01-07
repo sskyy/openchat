@@ -9,6 +9,6 @@ exports.config = {
     'weibo' : {
         appkey : 3312201828
     },
-    'version' : 'local'
+    'version' : '_local'
 }
 

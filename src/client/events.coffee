@@ -1,6 +1,4 @@
 
-#require:connect.coffee,user.coffee,page_feature.coffee
-
 #file:events.coffee     
 
 angular.module('openchat', ['openchat.service']).controller('basic', ( $scope, $connect, $user ) ->
@@ -42,7 +40,7 @@ angular.module('openchat', ['openchat.service']).controller('basic', ( $scope, $
     socket.emit "send_message", $scope.message ;
     
   $scope.user_detect = () ->
-    $user.user_detect().success( (user)->
+    $user.user_detect().then( (user)->
       $scope.current_user = user;
       $scope.$digest();
     );

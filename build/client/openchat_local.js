@@ -2,7 +2,7 @@
 
   angular.module('openchat.service', []).service('$connect', function() {
     var $connect, url;
-    url = 'jieq1u3u19.elb7.stacklab.org/chat';
+    url = '127.0.0.1/chat';
     if (typeof io === void 0) {
       console.log("socket.io not exist");
       return {};
@@ -20,7 +20,7 @@
     $user.user_detect = function() {
       var ioOauth, q;
       q = $q.defer();
-      ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth');
+      ioOauth = io.connect('127.0.0.1/oauth');
       ioOauth.on('connect', function(socket) {
         ioOauth.emit('apply_oauth_id');
         return console.log('apply_oauth_id');
@@ -29,7 +29,7 @@
         var param, url;
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
-        param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id=' + oauth_id].join('&');
+        param = ['?client_id=3312201828', 'redirect_uri=127.0.0.1?oauth_id=' + oauth_id].join('&');
         return window.open(url + param);
       });
       ioOauth.on('access_token', function(access_token) {

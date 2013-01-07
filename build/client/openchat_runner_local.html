@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="http://127.0.0.1:8000/socket.io/socket.io.js"></script>
+        <script src="http://127.0.0.1:8000/build/client/angular.js"></script>
+        <script src="http://127.0.0.1:8000/build/client/openchat_local.js"></script>
+        <link type="text/css" rel="stylesheet" href="http://127.0.0.1:8000/build/client/css/bootstrap.min.css">
+        
+        <style>
+            .mb20{margin-bottom: 20px;}
+            .mb5{margin-bottom: 5px;}
+            .mt20{margin-top: 20px;}
+            .tal{text-align: left}
+        </style>
+    </head>
+    <body>
+        <div ng-app="openchat" class="container">
+            <div ng-controller="basic">
+                <div class="row mb20 mt20">
+                    <span class="label label-success span1" ng-show="socket.socket.connected">已连接</span>
+                    <span class="label label-warning span1" ng-show="!socket.socket.connected">未连接</span>
+                </div>
+                <div  class="row" ng-show="recieve_message">
+                    <div class="span12  alert alert-success">
+                        <span class="icon-user"></span>{{recieve_message.source}} : `{{recieve_message.message}} `
+                    </div>
+                </div>
+                <div  class="row  mb20 form-inline">
+                    <div class="span12">
+                        <span class="label-info label ">当前用户</span>
+                        <a class="btn" ng-click="user_detect()">识别微博用户</a>
+                        <div>
+                            <input type="text" ng-model="current_user.name">
+                            <input type="button" class="btn btn-primary" ng-click="connect()" value="connect">
+                            <input type="button" class="btn btn-danger" ng-click="disconnect()" value="disconnect">
+                        </div>
+                    </div>
+                </div>
+                <div  class="row">
+                    <span class="label-info label span1">所有用户</span>
+                </div>
+                <div class="row mb20">
+                    <div  class="form-inline  span12"> 
+                        <input type="text" ng-model="message.message"class="span4">
+                        <input type="button" class="btn" ng-click="send_message()" value="send message">
+                    </div>
+                </div>
+                <div  class="row mb5" ng-repeat="user in users" ng-click="message.target=user.name">
+                    <div class="btn span12 tal">
+                        <span class="icon-user"></span>{{user.name}}  
+                        <span class="icon-ok" ng-show="message.target==user.name&&user.name!=current_user.name"></span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
+
+

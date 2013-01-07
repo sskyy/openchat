@@ -11,6 +11,7 @@ exports.listen = function( io, server ){
 
 function listen_socket( io ){
     io.of('/oauth').on( 'connection', function( socket ) {
+        console.log("on connection" );
         socket.on('apply_oauth_id', function(){
             var id = generate_id();
             while( id in connections ){

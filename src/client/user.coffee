@@ -6,8 +6,9 @@ angular.module('openchat.service').service('$user', ( $q )->
   $user = {};
   $user.user_detect = () ->
     q = $q.defer()
+    console.log( '<%= config.host%>/oauth')
     ioOauth = io.connect('<%= config.host%>/oauth')
-    ioOauth.on('connection', ( socket)->
+    ioOauth.on('connect', ( socket)->
       ioOauth.emit('apply_oauth_id')
       console.log('apply_oauth_id');
     )

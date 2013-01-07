@@ -4,7 +4,7 @@
 
 angular.module('openchat.service',[])
 .service('$connect', () ->
-  url = 'jieq1u3u19.elb7.stacklab.org/chat'
+  url = '127.0.0.1/chat'
   if( typeof( io) == undefined )
     console.log( "socket.io not exist");
     return {};
@@ -26,8 +26,8 @@ angular.module('openchat.service').service('$user', ( $q )->
   $user = {};
   $user.user_detect = () ->
     q = $q.defer()
-    console.log( 'jieq1u3u19.elb7.stacklab.org/oauth')
-    ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth')
+    console.log( '127.0.0.1/oauth')
+    ioOauth = io.connect('127.0.0.1/oauth')
     ioOauth.on('connect', ( socket)->
       ioOauth.emit('apply_oauth_id')
       console.log('apply_oauth_id');
@@ -37,7 +37,7 @@ angular.module('openchat.service').service('$user', ( $q )->
       console.log( oauth_id );
       url = 'https://api.weibo.com/oauth2/authorize';
       param = ['?client_id=3312201828',
-        'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id='+oauth_id].join('&')
+        'redirect_uri=127.0.0.1?oauth_id='+oauth_id].join('&')
       window.open( url+param );
     )
     
