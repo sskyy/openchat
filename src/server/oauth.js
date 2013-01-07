@@ -56,5 +56,5 @@ function get_access_token( code, callback ){
 }
 
 function generate_id(){
-    return new Date().toString();
+    return Date.parse(new Date());
 }
