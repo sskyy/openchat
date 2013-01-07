@@ -25,7 +25,7 @@ angular.module('openchat.service').service('$user', ()->
 
   $user = {};
   $user.user_detect = () ->
-    ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth').connect()
+    ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth')
     ioOauth.on('connection', ( socket)->
       ioOauth.emit('apply_oauth_id')
     )
