@@ -58,7 +58,7 @@ angular.module('openchat.service').service('$page_feature',()->
 
 #file:events.coffee     
 
-angular.module('openchat', ['openchat.service','openchat.user',]).controller('basic', ( $scope, $connect, $user ) ->
+angular.module('openchat', ['openchat.service']).controller('basic', ( $scope, $connect, $user ) ->
   $scope.current_user = {name:'jason'};
   $scope.message = {};
   socket = null;  

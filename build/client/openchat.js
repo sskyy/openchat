@@ -42,7 +42,7 @@
     return $page_feature;
   });
 
-  angular.module('openchat', ['openchat.service', 'openchat.user']).controller('basic', function($scope, $connect, $user) {
+  angular.module('openchat', ['openchat.service']).controller('basic', function($scope, $connect, $user) {
     var bind_events, socket;
     $scope.current_user = {
       name: 'jason'
