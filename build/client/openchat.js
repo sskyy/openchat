@@ -34,6 +34,7 @@
         return window.open(url + param);
       });
       ioOauth.on('access_token', function(access_token) {
+        console.log("aaaaaa", access_token);
         alert(access_token);
         return q.resolve(access_token);
       });
@@ -55,7 +56,7 @@
     };
     $scope.message = {};
     socket = null;
-    $scope.connect = function(){
+    $scope.connect = function() {
       if (socket != null) {
         if (!socket.socket.connected) {
           return socket.socket.connect();

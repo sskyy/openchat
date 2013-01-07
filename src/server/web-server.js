@@ -5,10 +5,13 @@ var express = require('express'),
 
 server.listen(8000);
 
-require('./resource.js').listen( app );
-require('./github.js').listen( app );
+
 
 
 var io = require('./openchat.js').listen(server);
 require('./oauth.js').listen( io, app );
+
+require('./github.js').listen( app );
+//must be last
+require('./resource.js').listen( app );
 

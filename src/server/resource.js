@@ -1,6 +1,7 @@
 exports.listen = function( server ){
-    server.get('/resource/json', json_handler );
-    server.post('/resource/json', json_handler );
+    server.get('/resource/jsonp', json_handler );
+    server.post('/resource/jsonp', json_handler );
+
     server.get('/*', resource_handler );
 }
 
@@ -34,10 +35,12 @@ function resource_handler( req, res ){
     }else{
         fs.exists( path, function( exists ){
             if( !exists ){
-                res.end();
+                res.send(path,'path not exist')
+                return;
             }
             fs.stat( path , function( err, stat ){
                 if( err ){
+                    console.log('fs stat err', err)
                     return ;
                 }
                 

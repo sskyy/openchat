@@ -23,6 +23,7 @@ angular.module('openchat.service').service('$user', ( $q )->
     )
     
     ioOauth.on('access_token', ( access_token )->
+      console.log( access_token );
       alert( access_token )
       q.resolve( access_token )
     )
