@@ -37,6 +37,18 @@ function listen_server( server ){
         });
     });
     
+    server.get('/oauth/callback', function(req, res){
+        console.log( "oauth/callback", req.query.code, req.query.oauth_id );
+        if( !( "code" in req.query ) || !('state' in req.query) ){
+            res.end()
+        }
+        get_access_token( req.query.code, req.query.state, function( access_token ){
+            connections[req.query.state].emit('access_token', access_token );
+            connections[req.query.state].disconnect();
+            delete connections[oauth_id];
+        });
+    });
+    
 }
 
 function get_access_token( code, callback ){
