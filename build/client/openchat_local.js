@@ -20,6 +20,7 @@
     $user.user_detect = function() {
       var ioOauth, q;
       q = $q.defer();
+      console.log('127.0.0.1/oauth');
       ioOauth = io.connect('127.0.0.1/oauth');
       ioOauth.on('connect', function(socket) {
         ioOauth.emit('apply_oauth_id');

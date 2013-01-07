@@ -20,6 +20,7 @@
     $user.user_detect = function() {
       var ioOauth, q;
       q = $q.defer();
+      console.log('jieq1u3u19.elb7.stacklab.org/oauth');
       ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth');
       ioOauth.on('connect', function(socket) {
         ioOauth.emit('apply_oauth_id');
