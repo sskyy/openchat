@@ -113,4 +113,3 @@ angular.module('openchat', ['openchat.service']).controller('basic', ( $scope, $
   return;
 )
 
-

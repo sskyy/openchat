@@ -30,7 +30,7 @@
         var param, url;
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
-        param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org', 'state=' + oauth_id].join('&');
+        param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org/oauth/callback', 'state=' + oauth_id].join('&');
         return window.open(url + param);
       });
       ioOauth.on('access_token', function(access_token) {
