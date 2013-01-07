@@ -37,7 +37,7 @@ angular.module('openchat.service').service('$user', ( $q )->
       console.log( oauth_id );
       url = 'https://api.weibo.com/oauth2/authorize';
       param = ['?client_id=3312201828',
-        'redirect_uri=127.0.0.1',
+        'redirect_uri=127.0.0.1/oauth/callback',
         'state='+oauth_id].join('&')
       window.open( url+param );
     )
