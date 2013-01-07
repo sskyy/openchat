@@ -21,7 +21,6 @@ module.exports = function( grunt ){
                 include: ['./'],
                 rules: [{ src: 'src/client/openchat.coffee', dst: 'build/client/'}] },
             function(err){
-                console.log( err);
                 //replace global values
                 fs.writeFileSync( 'build/client/openchat.coffee',
                 grunt.template.process( fs.readFileSync( 'build/client/openchat.coffee').toString(), globalConfig) )

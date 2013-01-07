@@ -17,7 +17,7 @@ single_socket_event = function(socket, data, io) {
     }
     data.users[user.name] = user;
     data.connections[user.name] = socket;
-    return io.sockets.emit("update_users", data.users);
+    return io.of('/chat').emit("update_users", data.users);
   });
   socket.on('disconnect', function() {
     return socket.get('user', function(err, user) {
@@ -28,7 +28,7 @@ single_socket_event = function(socket, data, io) {
         if ((user.name in data.users) && !(user.name in data.connections)) {
           delete data.users[user.name];
         }
-        return io.sockets.emit('update_users', data.users);
+        return io.of('/chat').emit('update_users', data.users);
       }
     });
   });
@@ -45,7 +45,10 @@ single_socket_event = function(socket, data, io) {
 };
 
 exports.listen = function(server) {
-  return io.listen(server.server).sockets.on('connection', function(socket) {
+  var reIO;
+  reIO = io.listen(server);
+  reIO.of('/chat').on('connection', function(socket) {
     return single_socket_event(socket, data, io);
   });
+  return reIO;
 };

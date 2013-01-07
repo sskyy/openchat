@@ -4,7 +4,7 @@
 
 angular.module('openchat.service',[])
 .service('$connect', () ->
-  url = 'jieq1u3u19.elb7.stacklab.org'
+  url = 'jieq1u3u19.elb7.stacklab.org/chat'
   if( typeof( io) == undefined )
     console.log( "socket.io not exist");
     return {};
@@ -24,9 +24,25 @@ angular.module('openchat.service',[])
 angular.module('openchat.service').service('$user', ()->
 
   $user = {};
-  $user.auto_detect = () ->
-    console.log 'auto detect user'
-  
+  $user.user_detect = () ->
+    ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth').connect()
+    ioOauth.on('connection', ( socket)->
+      ioOauth.emit('apply_oauth_id')
+    )
+    
+    ioOauth.on('oauth_id', ( oauth_id )->
+      url = 'https://api.weibo.com/oauth2/authorize';
+      param = ['?client_id=3312201828',
+        'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id='+oauth_id].join('&')
+        
+        
+      window.open( url+param );
+    )
+    
+    ioOauth.on('access_token', ( access_token )->
+      alert( access_token )
+    )
+    
   return $user;
   
 )
@@ -57,7 +73,6 @@ angular.module('openchat', ['openchat.service','openchat.user',]).controller('ba
   bind_events = ( socket )->
     socket.on 'connect', ()->
       console.log 'connected'
-      $user.auto_detect();
       
     $scope.socket.on "update_users", (users) -> 
       $scope.users = users ;
@@ -80,6 +95,12 @@ angular.module('openchat', ['openchat.service','openchat.user',]).controller('ba
     
   $scope.send_message = () ->
     socket.emit "send_message", $scope.message ;
+    
+  $scope.user_detect = () ->
+    $user.user_detect().success( (user)->
+      $scope.current_user = user;
+      $scope.$digest();
+    );
   
   window.onclose = () ->
     socket.disconnect();

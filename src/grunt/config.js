@@ -5,6 +5,9 @@ exports.config = {
     'socket.io': {
         port : 8000
     },
-    'port' : 80
+    'port' : 80,
+    'weibo' : {
+        appkey : 3312201828
+    }
 }
 

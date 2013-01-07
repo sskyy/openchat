@@ -2,7 +2,7 @@
 
   angular.module('openchat.service', []).service('$connect', function() {
     var $connect, url;
-    url = 'jieq1u3u19.elb7.stacklab.org';
+    url = 'jieq1u3u19.elb7.stacklab.org/chat';
     if (typeof io === void 0) {
       console.log("socket.io not exist");
       return {};
@@ -17,8 +17,21 @@
   angular.module('openchat.service').service('$user', function() {
     var $user;
     $user = {};
-    $user.auto_detect = function() {
-      return console.log('auto detect user');
+    $user.user_detect = function() {
+      var ioOauth;
+      ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth').connect();
+      ioOauth.on('connection', function(socket) {
+        return ioOauth.emit('apply_oauth_id');
+      });
+      ioOauth.on('oauth_id', function(oauth_id) {
+        var param, url;
+        url = 'https://api.weibo.com/oauth2/authorize';
+        param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id=' + oauth_id].join('&');
+        return window.open(url + param);
+      });
+      return ioOauth.on('access_token', function(access_token) {
+        return alert(access_token);
+      });
     };
     return $user;
   });
@@ -48,8 +61,7 @@
     };
     bind_events = function(socket) {
       socket.on('connect', function() {
-        console.log('connected');
-        return $user.auto_detect();
+        return console.log('connected');
       });
       $scope.socket.on("update_users", function(users) {
         $scope.users = users;
@@ -76,6 +88,12 @@
     };
     $scope.send_message = function() {
       return socket.emit("send_message", $scope.message);
+    };
+    $scope.user_detect = function() {
+      return $user.user_detect().success(function(user) {
+        $scope.current_user = user;
+        return $scope.$digest();
+      });
     };
     window.onclose = function() {
       return socket.disconnect();

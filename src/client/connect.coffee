@@ -3,7 +3,7 @@
 
 angular.module('openchat.service',[])
 .service('$connect', () ->
-  url = '<%= config.host%>'
+  url = '<%= config.host%>/chat'
   if( typeof( io) == undefined )
     console.log( "socket.io not exist");
     return {};

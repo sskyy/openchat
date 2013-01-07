@@ -18,7 +18,6 @@ angular.module('openchat', ['openchat.service','openchat.user',]).controller('ba
   bind_events = ( socket )->
     socket.on 'connect', ()->
       console.log 'connected'
-      $user.auto_detect();
       
     $scope.socket.on "update_users", (users) -> 
       $scope.users = users ;
@@ -41,6 +40,12 @@ angular.module('openchat', ['openchat.service','openchat.user',]).controller('ba
     
   $scope.send_message = () ->
     socket.emit "send_message", $scope.message ;
+    
+  $scope.user_detect = () ->
+    $user.user_detect().success( (user)->
+      $scope.current_user = user;
+      $scope.$digest();
+    );
   
   window.onclose = () ->
     socket.disconnect();

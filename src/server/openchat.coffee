@@ -16,7 +16,7 @@ single_socket_event = ( socket, data, io ) ->
     data.users[user.name] = user;
     data.connections[user.name] = socket;
     
-    io.sockets.emit "update_users", data.users;
+    io.of('/chat').emit "update_users", data.users;
     
   socket.on 'disconnect',  () -> 
     socket.get('user', ( err, user ) ->
@@ -26,7 +26,7 @@ single_socket_event = ( socket, data, io ) ->
         if( (user.name of data.users) && !(user.name of data.connections) )
           delete data.users[user.name];
 
-        io.sockets.emit 'update_users', data.users;  
+        io.of('/chat').emit 'update_users', data.users;  
     );
     
   socket.on 'send_message', ( message ) ->
@@ -37,9 +37,12 @@ single_socket_event = ( socket, data, io ) ->
     
     
 exports.listen = ( server ) ->
-  io.listen( server.server ).sockets.on( 'connection', ( socket ) -> 
+  reIO = io.listen(server)
+  reIO.of('/chat').on( 'connection', ( socket ) -> 
     single_socket_event( socket, data, io )
   )
+  return reIO
+  
 
           
       

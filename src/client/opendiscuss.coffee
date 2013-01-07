@@ -19,3 +19,4 @@
   load_css(TOOLHOST + "/application/views/css/tool.css?");
 
   angular.bootstrap( angular.element(document),["initialize"] );
+
