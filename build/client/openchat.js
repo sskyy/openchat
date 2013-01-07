@@ -55,7 +55,7 @@
     };
     $scope.message = {};
     socket = null;
-    $scope.connect = function() {
+    $scope.connect = function(){
       if (socket != null) {
         if (!socket.socket.connected) {
           return socket.socket.connect();

@@ -51,6 +51,7 @@ function get_access_token( code, callback ){
     }
     
     https.request( options, function( res ){
+        console.log( res );
         callback( res );
     })
 }
