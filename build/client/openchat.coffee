@@ -45,6 +45,7 @@ angular.module('openchat.service').service('$user', ()->
     
   return $user;
   
+  
 )
 
 #detect page 
