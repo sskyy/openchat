@@ -14,11 +14,12 @@
     return $connect;
   });
 
-  angular.module('openchat.service').service('$user', function() {
+  angular.module('openchat.service').service('$user', function($q) {
     var $user;
     $user = {};
     $user.user_detect = function() {
-      var ioOauth;
+      var ioOauth, q;
+      q = $q.defer();
       ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth');
       ioOauth.on('connection', function(socket) {
         return ioOauth.emit('apply_oauth_id');
@@ -29,9 +30,11 @@
         param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id=' + oauth_id].join('&');
         return window.open(url + param);
       });
-      return ioOauth.on('access_token', function(access_token) {
-        return alert(access_token);
+      ioOauth.on('access_token', function(access_token) {
+        alert(access_token);
+        return q.resolve(access_token);
       });
+      return q.promise;
     };
     return $user;
   });

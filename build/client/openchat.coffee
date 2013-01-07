@@ -21,10 +21,11 @@ angular.module('openchat.service',[])
 
 #user main file
 
-angular.module('openchat.service').service('$user', ()->
+angular.module('openchat.service').service('$user', ( $q )->
 
   $user = {};
   $user.user_detect = () ->
+    q = $q.defer()
     ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth')
     ioOauth.on('connection', ( socket)->
       ioOauth.emit('apply_oauth_id')
@@ -34,14 +35,15 @@ angular.module('openchat.service').service('$user', ()->
       url = 'https://api.weibo.com/oauth2/authorize';
       param = ['?client_id=3312201828',
         'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id='+oauth_id].join('&')
-        
-        
       window.open( url+param );
     )
     
     ioOauth.on('access_token', ( access_token )->
       alert( access_token )
+      q.resolve( access_token )
     )
+    
+    return q.promise;
     
   return $user;
   

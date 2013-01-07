@@ -18,12 +18,14 @@ function listen_socket( io ){
             }
             connections[id] = socket;
             socket.emit('oauth_id', id );
+            console.log( 'oauth_id', id );
         });
     }) 
 }
 
 function listen_server( server ){
     server.post('/oauth/callback', function(req, res){
+        console.log( "oauth/callback", req.query.code, req.query.oauth_id );
         if( !( "code" in req.query ) || !('oauth_id' in req.query) ){
             res.end()
         }
