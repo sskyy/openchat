@@ -22,7 +22,8 @@
       q = $q.defer();
       ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth');
       ioOauth.on('connection', function(socket) {
-        return ioOauth.emit('apply_oauth_id');
+        ioOauth.emit('apply_oauth_id');
+        return console.log('apply_oauth_id');
       });
       ioOauth.on('oauth_id', function(oauth_id) {
         var param, url;

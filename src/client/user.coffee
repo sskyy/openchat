@@ -9,9 +9,11 @@ angular.module('openchat.service').service('$user', ( $q )->
     ioOauth = io.connect('<%= config.host%>/oauth')
     ioOauth.on('connection', ( socket)->
       ioOauth.emit('apply_oauth_id')
+      console.log('apply_oauth_id');
     )
     
     ioOauth.on('oauth_id', ( oauth_id )->
+      console.log( oauth_id );
       url = 'https://api.weibo.com/oauth2/authorize';
       param = ['?client_id=<%= config.weibo.appkey%>',
         'redirect_uri=<%= config.host%>?oauth_id='+oauth_id].join('&')

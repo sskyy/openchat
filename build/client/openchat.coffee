@@ -29,9 +29,11 @@ angular.module('openchat.service').service('$user', ( $q )->
     ioOauth = io.connect('jieq1u3u19.elb7.stacklab.org/oauth')
     ioOauth.on('connection', ( socket)->
       ioOauth.emit('apply_oauth_id')
+      console.log('apply_oauth_id');
     )
     
     ioOauth.on('oauth_id', ( oauth_id )->
+      console.log( oauth_id );
       url = 'https://api.weibo.com/oauth2/authorize';
       param = ['?client_id=3312201828',
         'redirect_uri=jieq1u3u19.elb7.stacklab.org?oauth_id='+oauth_id].join('&')
