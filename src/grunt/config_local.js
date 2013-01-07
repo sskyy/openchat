@@ -1,14 +1,14 @@
 //global config
 
 exports.config = {
-    'host' : "jieq1u3u19.elb7.stacklab.org", 
+    'host' : "127.0.0.1", 
     'socket.io': {
         port : 8000
     },
-    'port' : 80,
+    'port' : 8000,
     'weibo' : {
         appkey : 3312201828
     },
-    'version' : ''
+    'version' : 'local'
 }
 

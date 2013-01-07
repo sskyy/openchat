@@ -29,7 +29,8 @@ module.exports = function(grunt) {
         coffee : {
             compile:{
                 files:{
-                    './build/client/openchat.js':['./build/client/openchat.coffee']
+                    './build/client/openchat.js':['./build/client/openchat.coffee'],
+                    './build/client/openchat_local.js':['./build/client/openchat_local.coffee']
                 }
             }
         },

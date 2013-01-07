@@ -5,6 +5,7 @@
 
 module.exports = function( grunt ){
     var globalConfig = require('../config.js');
+    var globalConfigLocal = require('../config_local.js');
     var fs = require('fs');
     grunt.registerTask("build-openchat", function(){
         if( in_array( 'async',this.args) ){
@@ -22,8 +23,12 @@ module.exports = function( grunt ){
                 rules: [{ src: 'src/client/openchat.coffee', dst: 'build/client/'}] },
             function(err){
                 //replace global values
+                var coffeeFile = fs.readFileSync( 'build/client/openchat.coffee').toString();
                 fs.writeFileSync( 'build/client/openchat.coffee',
-                grunt.template.process( fs.readFileSync( 'build/client/openchat.coffee').toString(), globalConfig) )
+                grunt.template.process( coffeeFile, globalConfig) )
+                
+                fs.writeFileSync( 'build/client/openchat_local.coffee',
+                grunt.template.process( coffeeFile, globalConfigLocal ) )
                 
                 done && done();
         });
@@ -32,14 +37,14 @@ module.exports = function( grunt ){
         fs.writeFileSync( './build/client/openchat_runner.html',
         grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html').toString(), globalConfig) )
             
+        //build openchat_runner_local.html
+        fs.writeFileSync( './build/client/openchat_runner_local.html',
+        grunt.template.process( fs.readFileSync( './src/client/openchat_runner.tpl.html').toString(), globalConfigLocal) )
+        
+        
         //build openchat.js
         grunt.task.run('coffee');
     });
-    
-    
-    function coffee_template( coffeeContent ){
-        return grunt.template.process( coffee_replace_token( coffeeContent ), globalConfig );
-    }
     
     function in_array( val, arr ){
         for( var i in arr ){
