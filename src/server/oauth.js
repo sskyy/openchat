@@ -1,83 +1,66 @@
-var oauthClient = {
-    APPKEY:3312201828,
-    APPSECRET:'504c80843945b0c9b3b44ec188cc1d27',
-    DOMAIN:'jieq1u3u19.elb7.stacklab.org'
-}
-var connections = {};
 var https = require('https');
+var _ = require('underscore');
 
+var access_tokens = {};
+var supported_platform = ['weibo'];
 
-exports.listen = function( io, server ){
-    listen_socket( io );
-    listen_server( server, io );
-}
-
-function listen_socket( io ){
-    io.of('/oauth').on( 'connection', function( socket ) {
-        console.log("on connection" );
-        socket.on('apply_oauth_id', function(){
-            var id = generate_id();
-            while( id in connections ){
-                id = generate_id();
-            }
-            connections[id] = id;
-            socket.join( id );
-            socket.emit('oauth_id', id );
-        });
-    }) 
+exports.listen = function( server ){
+    listen_server( server );
 }
 
 function listen_server( server, io ){
+    server.get('/oauth/apply_oauth_id', function( req, res ){
+        var id = generate_id();
+        res.jsonp({
+            oauth_id:id
+        })
+    })
     
     server.get('/oauth/callback', function(req, res){
-        console.log( "oauth/callback", req.query.code, req.query.state );
         if( !( "code" in req.query ) || !('state' in req.query) ){
-            res.end()
-            return;
+            return res.send(501,{
+                message:"no code or oauth_id"
+            })
         }
-        get_access_token( req.query.code, function( access_token ){
-            io.of("/oauth").in( req.query.state ).emit( 'access_token',access_token );
-            delete connections[req.query.state];
-//            connections[req.query.state].emit('access_token', access_token );
-//            connections[req.query.state].disconnect();
-//            delete connections[oauth_id];
-            res.end();
-            return;
+        var state = req.query.state.split(":");
+        var oauth_id = state[1];
+        var platformName = state[0]
+        
+        if( _.indexOf( supported_platform, platformName) == -1 ){
+            return res.send(501,{
+                message:'platform ' + platformName + ' not supported'
+                });
+        }
+        
+        var platform = require('./oauth-'+platformName + '.js')();
+        platform.get_access_token(null, req.query.code,  function( access_token ){
+            console.log( access_token );
+            //todo : set user session
+            req.session.user = platform.gen_user_session( access_token );
+            return access_tokens[oauth_id] = access_token
         });
+        
+        res.sendfile('./src/server/oauth_login.html');
+    })
+    
+    server.get('/oauth/access_token', function(req, res){
+        if( req.query.oauth_id in access_tokens ){
+            res.jsonp( access_tokens[req.query.oauth_id] )
+            return delete access_tokens[req.query.oauth_id]
+        }
+        console.log( access_tokens );
+        
+        return res.send(404,{ message:'access_token not get yet'});
     })
     
 }
 
-function get_access_token( code, callback ){
-    var options = {
-        host : "api.weibo.com",
-        path : ['/oauth2/access_token?client_id='+oauthClient.APPKEY,
-        'client_secret='+oauthClient.APPSECRET,
-        'grant_type=authorization_code',
-        'code='+code,
-        'redirect_uri='+ oauthClient.DOMAIN+'/oauth/callback'].join('&'),
-        method : 'POST',
-        headers: {
-            'Content-Length': 0
-        }
-    }
-    
-    var req = https.request(options, function(res) {
-        console.log("statusCode: ", res.statusCode);
-        console.log("headers: ", res.headers);
-
-        res.on('data', function(d) {
-            callback( d.toString() );
-        });
-    });
-    req.end();
-
-    req.on('error', function(e) {
-        console.error(e);
-    });
-    
-}
 
 function generate_id(){
-    return Date.parse(new Date());
+    var id = Date.parse( new Date())
+    while( id in access_tokens ){
+        id = Date.parse( new Date())
+    }
+    return id;
 }
+

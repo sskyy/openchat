@@ -3,7 +3,7 @@
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="http://<%=config.host%>:<%=config.port%>/socket.io/socket.io.js"></script>
+        <!--<script src="http://<%=config.host%>:<%=config.port%>/socket.io/socket.io.js"></script>-->
         <script src="http://<%=config.host%>:<%=config.port%>/build/client/angular.js"></script>
         <script src="http://<%=config.host%>:<%=config.port%>/build/client/openchat<%=config.version%>.js"></script>
         <link type="text/css" rel="stylesheet" href="http://<%=config.host%>:<%=config.port%>/build/client/css/bootstrap.min.css">
@@ -19,18 +19,18 @@
         <div ng-app="openchat" class="container">
             <div ng-controller="basic">
                 <div class="row mb20 mt20">
-                    <span class="label label-success span1" ng-show="socket.socket.connected">已连接</span>
-                    <span class="label label-warning span1" ng-show="!socket.socket.connected">未连接</span>
+                    <span class="label label-success span1" ng-show="is_connected()">已连接</span>
+                    <span class="label label-warning span1" ng-show="!is_connected()">未连接</span>
                 </div>
-                <div  class="row" ng-show="recieve_message">
-                    <div class="span12  alert alert-success">
-                        <span class="icon-user"></span>{{recieve_message.source}} : `{{recieve_message.message}} `
+                <div  class="row" ng-show="recieve_messages.length">
+                    <div class="span12  alert alert-success" ng-repeat="message in recieve_messages">
+                        <span class="icon-user"></span>{{message.source}} : `{{message.message}} `
                     </div>
                 </div>
                 <div  class="row  mb20 form-inline">
                     <div class="span12">
                         <span class="label-info label ">当前用户</span>
-                        <a class="btn" ng-click="user_detect()">识别微博用户</a>
+                        <a class="btn" ng-click="user_detect('weibo')">识别微博用户</a>
                         <div>
                             <input type="text" ng-model="current_user.name">
                             <input type="button" class="btn btn-primary" ng-click="connect()" value="connect">

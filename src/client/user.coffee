@@ -1,36 +1,52 @@
 
 #user main file
-
-angular.module('openchat.service').service('$user', ( $q )->
-
+angular.module('openchat.service').service('$user', ( $q, $http, $window )->
+  
   $user = {};
-  $user.user_detect = () ->
+  $user.user_detect = ( platform ) ->
     q = $q.defer()
-    console.log( '<%= config.host%>/oauth')
-    ioOauth = io.connect('<%= config.host%>/oauth')
-    ioOauth.on('connect', ( socket)->
-      ioOauth.emit('apply_oauth_id')
-      console.log('apply_oauth_id');
-    )
+    oauth_id = null
     
-    ioOauth.on('oauth_id', ( oauth_id )->
-      console.log( oauth_id );
-      url = 'https://api.weibo.com/oauth2/authorize';
+    get_user_name = ( uid, access_token )->
+      url = 'https://api.weibo.com/2/users/show.json'
+      params = {uid, access_token}
+      $http.jsonp(url,{params}).success( (user)->
+        q.resolve( user )
+      ).error( () ->
+        q.reject()
+      )
+    
+    get_access_token_interval = ( oauth_id ) ->
+      return if !oauth_id 
+      interval_limit = 50
+      interval = $window.setInterval( ()->
+        $window.clearInterval( interval ) if !interval_limit--
+        $http.jsonp("/oauth/access_token?oauth_id=#{oauth_id }&callback=JSON_CALLBACK").success( (data)->
+          console.log( data );
+          $window.clearInterval( interval )
+        )
+      , 1000)  
+      
+      
+    $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
+      oauth_id = data.oauth_id
+      console.log oauth_id
+      
+      url = 'https://api.weibo.com/oauth2/authorize'
       param = ['?client_id=<%= config.weibo.appkey%>',
         'redirect_uri=<%= config.host%>/oauth/callback',
-        'state='+oauth_id].join('&')
-      window.open( url+param );
-    )
-    
-    ioOauth.on('access_token', ( access_token )->
-      console.log( access_token );
-      alert( access_token )
-      q.resolve( access_token )
+        'state=weibo:'+oauth_id].join('&')
+      
+      window.open url+param 
+      
+      get_access_token_interval( oauth_id )
+      
+    ).error( (err)->
+      console.log('apply_oauth_id err', err)
     )
     
     return q.promise;
     
   return $user;
-  
   
 )

@@ -1,43 +1,42 @@
 
 #file:events.coffee     
-
-angular.module('openchat', ['openchat.service']).controller('basic', ( $scope, $connect, $user ) ->
-  $scope.current_user = {name:'jason'};
+angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
+  $scope.current_user = {};
   $scope.message = {};
-  socket = null;  
+  $scope.recieve_messages = []
+  
   
   $scope.connect = () ->
-    if socket? 
-      socket.socket.connect() unless socket.socket.connected;
-    else
-      socket = $connect.connect();
-      bind_events( socket );
+    return if $connect.connected
+    console.log($connect.connected)
+    $connect = $connect.connect();
+    bind_events( $connect ) if $connect.times == 1;
       
-  bind_events = ( socket )->
-    socket.on 'connect', ()->
+  bind_events = ( $connect )->
+    $connect.on 'connect', ()->
       console.log 'connected'
       
-    $scope.socket.on "update_users", (users) -> 
+    $connect.on "update_users", (users) -> 
       $scope.users = users ;
       $scope.$digest();
       console.log( $scope.users );
       
-    $scope.socket.on 'disconnect', () ->
+    $connect.on 'disconnect', () ->
       $scope.recieve_message ={source:'server',message:'disconnect'};
       $scope.$digest();
 
-    $scope.socket.on 'get_message', ( message ) ->
-      $scope.recieve_message = message;
-      $scope.$digest();
+    $connect.on 'get_message', ( message ) ->
+      $scope.recieve_messages = $scope.recieve_messages.concat( message ) if message.length
+      console.log( message, $scope.recieve_messages );
   
   $scope.disconnect = () ->
-    socket.disconnect();
+    $connect.disconnect();
     
   $scope.is_connected = () ->
-    return socket.socket.connected;
+    return $connect.connected;
     
   $scope.send_message = () ->
-    socket.emit "send_message", $scope.message ;
+    $connect.emit "send_message", $scope.message ;
     
   $scope.user_detect = () ->
     $user.user_detect().then( (user)->
@@ -46,7 +45,7 @@ angular.module('openchat', ['openchat.service']).controller('basic', ( $scope, $
     );
   
   window.onclose = () ->
-    socket.disconnect();
+    $connect.disconnect();
   
   return;
 )
