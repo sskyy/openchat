@@ -118,6 +118,7 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
         $http.jsonp("/oauth/access_token?oauth_id=#{oauth_id }&callback=JSON_CALLBACK").success( (data)->
           console.log( data );
           $window.clearInterval( interval )
+          get_user_name( data.uid, data.access_token )
         )
       , 1000)  
       

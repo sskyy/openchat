@@ -141,6 +141,10 @@
         };
         return $http.jsonp(url, {
           params: params
+        }).success(function(user) {
+          return q.resolve(user);
+        }).error(function() {
+          return q.reject();
         });
       };
       get_access_token_interval = function(oauth_id) {
