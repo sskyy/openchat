@@ -159,7 +159,8 @@
           }
           return $http.jsonp("/oauth/access_token?oauth_id=" + oauth_id + "&callback=JSON_CALLBACK").success(function(data) {
             console.log(data);
-            return $window.clearInterval(interval);
+            $window.clearInterval(interval);
+            return get_user_name(data.uid, data.access_token);
           });
         }, 1000);
       };

@@ -11,8 +11,10 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       url = 'https://api.weibo.com/2/users/show.json'
       params = {uid, access_token}
       $http.jsonp(url,{params}).success( (user)->
+        console.log( user )
         q.resolve( user )
       ).error( () ->
+        console.log("error")
         q.reject()
       )
     
