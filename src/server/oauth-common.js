@@ -14,7 +14,7 @@ oauth.prototype.get_access_token = function( httpsOptions, code, callback ){
     httpsOptions = httpsOptions ||
         {
             host : root.options.host,
-            path : [ root.options.path + '?client_id='+root.options.appkey,
+            path : [ root.options.path.access_token + '?client_id='+root.options.appkey,
             'client_secret='+root.options.appsecret,
             'grant_type=authorization_code',
             'code='+code,
@@ -29,8 +29,10 @@ oauth.prototype.get_access_token = function( httpsOptions, code, callback ){
         console.log("statusCode: ", res.statusCode);
         console.log("headers: ", res.headers);
 
-        res.on('data', function(d) {
-            callback( d.toString() );
+        res.on('data', function( buf) {
+            var data = JSON.parse( buf.toString() );
+            data.platform = root.options.platform 
+            callback( data );
         });
     });
     req.end();
@@ -40,9 +42,36 @@ oauth.prototype.get_access_token = function( httpsOptions, code, callback ){
     });
 }
 
-oauth.prototype.gen_user_session = function( access_token ){
-    var root =this;
-    return { access_token : access_token, id : access_token[root.options.idField]+'@'+root.options.platform}
+oauth.prototype.get_user_info = function( access_token, id, httpsOptions, callback){
+    var root = this;
+    httpsOptions = httpsOptions ||
+        {
+            host : root.options.host,
+            path : [ root.options.path.user_info + '?access_token=' + access_token,
+            'uid='+id].join('&'),
+            method : 'GET',
+            headers: {
+                'Content-Length': 0
+            }
+        }
+        
+    var req = https.request(httpsOptions, function(res) {
+        console.log("statusCode: ", res.statusCode);
+        console.log("headers: ", res.headers);
+
+        res.on('data', function( buf) {
+            var res = JSON.parse( buf.toString() );
+            console.log('get_user_info_done', res )
+            callback( res );
+        });
+    });
+
+    req.on('error', function(e) {
+        console.error(e);
+    });
+    
+    req.end();
 }
+
 
 module.exports = oauth;

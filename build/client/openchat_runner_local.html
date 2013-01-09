@@ -24,7 +24,7 @@
                 </div>
                 <div  class="row" ng-show="recieve_messages.length">
                     <div class="span12  alert alert-success" ng-repeat="message in recieve_messages">
-                        <span class="icon-user"></span>{{message.source}} : `{{message.message}} `
+                        <span class="icon-user"></span>{{message.source.name}}@{{message.source.platform}} : `{{message.message}} `
                     </div>
                 </div>
                 <div  class="row  mb20 form-inline">
@@ -47,7 +47,7 @@
                         <input type="button" class="btn" ng-click="send_message()" value="send message">
                     </div>
                 </div>
-                <div  class="row mb5" ng-repeat="user in users" ng-click="message.target=user.name">
+                <div  class="row mb5" ng-repeat="user in users" ng-click="message.target=user.openchatId">
                     <div class="btn span12 tal">
                         <span class="icon-user"></span>{{user.name}}  
                         <span class="icon-ok" ng-show="message.target==user.name&&user.name!=current_user.name"></span>

@@ -8,9 +8,17 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   
   $scope.connect = () ->
     return if $connect.connected
-    console.log($connect.connected)
-    $connect = $connect.connect();
-    bind_events( $connect ) if $connect.times == 1;
+    if $scope.current_user.name?
+      console.log( $scope.current_user,"bbb")
+      $connect = $connect.connect();
+      bind_events( $connect ) if $connect.times == 1;
+    else
+      console.log( $scope.current_user,"aaa")
+      $user.user_detect().then( (user)->
+        $scope.current_user = user;
+        $connect = $connect.connect();
+        bind_events( $connect ) if $connect.times == 1;
+      )
       
   bind_events = ( $connect )->
     $connect.on 'connect', ()->
@@ -18,7 +26,6 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
       
     $connect.on "update_users", (users) -> 
       $scope.users = users ;
-      $scope.$digest();
       console.log( $scope.users );
       
     $connect.on 'disconnect', () ->
@@ -26,8 +33,7 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
       $scope.$digest();
 
     $connect.on 'get_message', ( message ) ->
-      $scope.recieve_messages = $scope.recieve_messages.concat( message ) if message.length
-      console.log( message, $scope.recieve_messages );
+      $scope.recieve_messages = $scope.recieve_messages.concat( [message] ) if message
   
   $scope.disconnect = () ->
     $connect.disconnect();
@@ -41,7 +47,6 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.user_detect = () ->
     $user.user_detect().then( (user)->
       $scope.current_user = user;
-      $scope.$digest();
     );
   
   window.onclose = () ->
@@ -49,3 +54,4 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   
   return;
 )
+

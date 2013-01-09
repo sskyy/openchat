@@ -48,50 +48,87 @@ exports.listen = ( server ) ->
 /* using ajax
 */
 
-var chat, users,
+var chat, users, _,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+_ = require('underscore');
 
 users = {};
 
 chat = {
   connect: function(req, res) {
     var connectId, root, _name, _ref;
-    req.session.user = {
-      id: 'jason@weibo.com'
-    };
     root = this;
     if (!req.session.user) {
       return res.jsonp(501, {
         message: 'login first.'
       });
     }
-    if ((_ref = users[_name = req.session.user.id]) == null) {
-      users[_name] = {
-        user: req.session.user,
-        messages: [
+    if ((_ref = users[_name = req.session.user.openchatId]) == null) {
+      users[_name] = _.extend({
+        events: [
           {
-            source: 'server',
-            message: 'welcome'
+            event: 'get_message',
+            data: {
+              source: {
+                platform: 'openchat',
+                name: 'server'
+              },
+              message: 'welcome'
+            }
           }
         ],
         connectId: null,
         lastLogin: null
-      };
+      }, req.session.user);
     }
     connectId = (req.query.connectId != null) || root._generate_id();
-    users[req.session.user.id].connectId = connectId;
-    users[req.session.user.id].lastLogin = root._now();
+    users[req.session.user.openchatId].connectId = connectId;
+    users[req.session.user.openchatId].lastLogin = root._now();
+    console.log(req.session.user.openchatId, "logged in ");
+    root._connect_events(req.session.user.openchatId);
     return res.jsonp(200, {
       message: 'hello',
       connectId: connectId
     });
+  },
+  _connect_events: function(connectUser) {
+    return this._notify_all_user('update_users', this._output_all_users());
+  },
+  _notify_all_user: function(event, data) {
+    var openchatId, user, _results;
+    _results = [];
+    for (openchatId in users) {
+      user = users[openchatId];
+      _results.push(user.events.push({
+        event: event,
+        data: data
+      }));
+    }
+    return _results;
+  },
+  _output_all_users: function() {
+    var openchatId, output, user;
+    output = (function() {
+      var _results;
+      _results = [];
+      for (openchatId in users) {
+        user = users[openchatId];
+        _results.push({
+          name: user.name,
+          openchatId: user.openchatId
+        });
+      }
+      return _results;
+    })();
+    return output;
   },
   emit: function(req, res) {
     var root, _ref;
     if (_ref = !req.query.event, __indexOf.call(this, _ref) >= 0) {
       return res.jsonp(404, {});
     }
-    if (!users[req.session.user.id].connectId === req.query.connectId) {
+    if (!users[req.session.user.openchatId].connectId === req.query.connectId) {
       return req.jsonp(401, {
         message: 'you have been kicked out'
       });
@@ -100,26 +137,35 @@ chat = {
     return root[req.query.event](req, res);
   },
   send_message: function(req, res) {
-    if (!req.query.data.target in messages) {
-      return;
+    var data, event;
+    data = JSON.parse(req.query.data);
+    console.log(data);
+    if (!(data.target in users) || !users[data.target].connectId) {
+      return console.log(data.target, ' not online, message saved to database.');
     }
-    return messages[req.query.data.target].push({
-      source: req.session.user.id,
-      message: req.query.data.message
-    });
+    event = {
+      event: 'get_message',
+      data: {
+        source: req.session.user,
+        message: data.message
+      }
+    };
+    return users[data.target].events.push(event);
   },
   recieve: function(req, res) {
     var _ref, _ref1;
-    if (!(((_ref = users[req.session.user.id]) != null ? _ref.connectId : void 0) === parseInt(req.query.connectId))) {
-      console.log(users, (_ref1 = users[req.session.user.id]) != null ? _ref1.connectId : void 0, req.query.connectId);
+    if (!(((_ref = users[req.session.user.openchatId]) != null ? _ref.connectId : void 0) === parseInt(req.query.connectId))) {
+      console.log(users, (_ref1 = users[req.session.user.openchatId]) != null ? _ref1.connectId : void 0, req.query.connectId);
       return res.jsonp(200, {
         error: 'you have been kicked out'
       });
     }
-    return res.jsonp(200, {
-      event: 'get_message',
-      data: users[req.session.user.id].messages.splice(0)
-    });
+    return res.jsonp(200, users[req.session.user.openchatId].events.splice(0));
+  },
+  disconnect: function(req, res) {
+    if (req.query.connectId === users[req.session.user.openchatId].connectId) {
+      return users[req.session.user.openchatId].connectId === null;
+    }
   },
   _generate_id: function(collection) {
     return this._now();

@@ -53,6 +53,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root.connected = false
       
     emit: ( event, data)->
+      return false if not this.connected 
       root = this
       params = {event, data, connectId:root.connectId,callback:'JSON_CALLBACK'}
       $http.jsonp(this.url+'/emit',{params})
@@ -74,7 +75,8 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       .success( ( res )->
         return root.disconnect() if "error" of res
         root.failures = 0
-        root._call_callbacks( res.event, res.data )
+        for event in res
+          root._call_callbacks( event.event, event.data )
       ).error(( res )->
         return root.failures++;
       )
@@ -97,34 +99,13 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
   
   $user = {};
-  $user.user_detect = ( platform ) ->
-    q = $q.defer()
+  
+  get_user_info = ()->
+    return $http.jsonp("/oauth/user_info?callback=JSON_CALLBACK")
+  
+  user_login = ()->
+    q = $q.defer();
     oauth_id = null
-    
-    get_user_name = ( uid, access_token )->
-      url = 'https://api.weibo.com/2/users/show.json'
-      params = {uid, access_token}
-      $http.jsonp(url,{params}).success( (user)->
-        console.log( user )
-        q.resolve( user )
-      ).error( () ->
-        console.log("error")
-        q.reject()
-      )
-    
-    get_access_token_interval = ( oauth_id ) ->
-      return if !oauth_id 
-      interval_limit = 50
-      interval = $window.setInterval( ()->
-        $window.clearInterval( interval ) if !interval_limit--
-        $http.jsonp("/oauth/access_token?oauth_id=#{oauth_id }&callback=JSON_CALLBACK").success( (data)->
-          console.log( data );
-          $window.clearInterval( interval )
-          get_user_name( data.uid, data.access_token )
-        )
-      , 1000)  
-      
-      
     $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
       oauth_id = data.oauth_id
       console.log oauth_id
@@ -136,16 +117,40 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       
       window.open url+param 
       
-      get_access_token_interval( oauth_id )
+      interval_limit = 50
+      interval = $window.setInterval( ()->
+        if !interval_limit
+          $window.clearInterval( interval ) 
+          return q.reject()
+        get_user_info().then((user)->
+          q.resolve(user)
+        ,()->
+          interval_limit--
+        )
+      , 1000)  
       
     ).error( (err)->
       console.log('apply_oauth_id err', err)
+      q.reject()
     )
-    
+    return q.promise
+  
+  $user.user_detect = ( platform ) ->
+    q = $q.defer()
+    get_user_info().success( (user)->
+      #logged in already
+      q.resolve( user )
+    ).error(()->
+      #need login
+      user_login().then( ( user )->
+        q.resolve( user )
+      )
+    )
+      
+      
     return q.promise;
     
   return $user;
-  
 )
 
 #detect page 
@@ -164,9 +169,17 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   
   $scope.connect = () ->
     return if $connect.connected
-    console.log($connect.connected)
-    $connect = $connect.connect();
-    bind_events( $connect ) if $connect.times == 1;
+    if $scope.current_user.name?
+      console.log( $scope.current_user,"bbb")
+      $connect = $connect.connect();
+      bind_events( $connect ) if $connect.times == 1;
+    else
+      console.log( $scope.current_user,"aaa")
+      $user.user_detect().then( (user)->
+        $scope.current_user = user;
+        $connect = $connect.connect();
+        bind_events( $connect ) if $connect.times == 1;
+      )
       
   bind_events = ( $connect )->
     $connect.on 'connect', ()->
@@ -174,7 +187,6 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
       
     $connect.on "update_users", (users) -> 
       $scope.users = users ;
-      $scope.$digest();
       console.log( $scope.users );
       
     $connect.on 'disconnect', () ->
@@ -182,8 +194,7 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
       $scope.$digest();
 
     $connect.on 'get_message', ( message ) ->
-      $scope.recieve_messages = $scope.recieve_messages.concat( message ) if message.length
-      console.log( message, $scope.recieve_messages );
+      $scope.recieve_messages = $scope.recieve_messages.concat( [message] ) if message
   
   $scope.disconnect = () ->
     $connect.disconnect();
@@ -197,7 +208,6 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.user_detect = () ->
     $user.user_detect().then( (user)->
       $scope.current_user = user;
-      $scope.$digest();
     );
   
   window.onclose = () ->
@@ -205,4 +215,5 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   
   return;
 )
+
 

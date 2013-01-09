@@ -57,6 +57,9 @@
       },
       emit: function(event, data) {
         var params, root;
+        if (!this.connected) {
+          return false;
+        }
         root = this;
         params = {
           event: event,
@@ -98,11 +101,17 @@
         return $http.jsonp(this.url + '/recieve', {
           params: params
         }).success(function(res) {
+          var event, _i, _len, _results;
           if ("error" in res) {
             return root.disconnect();
           }
           root.failures = 0;
-          return root._call_callbacks(res.event, res.data);
+          _results = [];
+          for (_i = 0, _len = res.length; _i < _len; _i++) {
+            event = res[_i];
+            _results.push(root._call_callbacks(event.event, event.data));
+          }
+          return _results;
         }).error(function(res) {
           return root.failures++;
         });
@@ -126,54 +135,49 @@
   });
 
   angular.module('openchat.service').service('$user', function($q, $http, $window) {
-    var $user;
+    var $user, get_user_info, user_login;
     $user = {};
-    $user.user_detect = function(platform) {
-      var get_access_token_interval, get_user_name, oauth_id, q;
+    get_user_info = function() {
+      return $http.jsonp("/oauth/user_info?callback=JSON_CALLBACK");
+    };
+    user_login = function() {
+      var oauth_id, q;
       q = $q.defer();
       oauth_id = null;
-      get_user_name = function(uid, access_token) {
-        var params, url;
-        url = 'https://api.weibo.com/2/users/show.json';
-        params = {
-          uid: uid,
-          access_token: access_token
-        };
-        return $http.jsonp(url, {
-          params: params
-        }).success(function(user) {
-          return q.resolve(user);
-        }).error(function() {
-          return q.reject();
-        });
-      };
-      get_access_token_interval = function(oauth_id) {
-        var interval, interval_limit;
-        if (!oauth_id) {
-          return;
-        }
-        interval_limit = 50;
-        return interval = $window.setInterval(function() {
-          if (!interval_limit--) {
-            $window.clearInterval(interval);
-          }
-          return $http.jsonp("/oauth/access_token?oauth_id=" + oauth_id + "&callback=JSON_CALLBACK").success(function(data) {
-            console.log(data);
-            $window.clearInterval(interval);
-            return get_user_name(data.uid, data.access_token);
-          });
-        }, 1000);
-      };
       $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success(function(data) {
-        var param, url;
+        var interval, interval_limit, param, url;
         oauth_id = data.oauth_id;
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
         param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org/oauth/callback', 'state=weibo:' + oauth_id].join('&');
         window.open(url + param);
-        return get_access_token_interval(oauth_id);
+        interval_limit = 50;
+        return interval = $window.setInterval(function() {
+          if (!interval_limit) {
+            $window.clearInterval(interval);
+            return q.reject();
+          }
+          return get_user_info().then(function(user) {
+            return q.resolve(user);
+          }, function() {
+            return interval_limit--;
+          });
+        }, 1000);
       }).error(function(err) {
-        return console.log('apply_oauth_id err', err);
+        console.log('apply_oauth_id err', err);
+        return q.reject();
+      });
+      return q.promise;
+    };
+    $user.user_detect = function(platform) {
+      var q;
+      q = $q.defer();
+      get_user_info().success(function(user) {
+        return q.resolve(user);
+      }).error(function() {
+        return user_login().then(function(user) {
+          return q.resolve(user);
+        });
       });
       return q.promise;
     };
@@ -195,10 +199,21 @@
       if ($connect.connected) {
         return;
       }
-      console.log($connect.connected);
-      $connect = $connect.connect();
-      if ($connect.times === 1) {
-        return bind_events($connect);
+      if ($scope.current_user.name != null) {
+        console.log($scope.current_user, "bbb");
+        $connect = $connect.connect();
+        if ($connect.times === 1) {
+          return bind_events($connect);
+        }
+      } else {
+        console.log($scope.current_user, "aaa");
+        return $user.user_detect().then(function(user) {
+          $scope.current_user = user;
+          $connect = $connect.connect();
+          if ($connect.times === 1) {
+            return bind_events($connect);
+          }
+        });
       }
     };
     bind_events = function($connect) {
@@ -207,7 +222,6 @@
       });
       $connect.on("update_users", function(users) {
         $scope.users = users;
-        $scope.$digest();
         return console.log($scope.users);
       });
       $connect.on('disconnect', function() {
@@ -218,10 +232,9 @@
         return $scope.$digest();
       });
       return $connect.on('get_message', function(message) {
-        if (message.length) {
-          $scope.recieve_messages = $scope.recieve_messages.concat(message);
+        if (message) {
+          return $scope.recieve_messages = $scope.recieve_messages.concat([message]);
         }
-        return console.log(message, $scope.recieve_messages);
       });
     };
     $scope.disconnect = function() {
@@ -235,8 +248,7 @@
     };
     $scope.user_detect = function() {
       return $user.user_detect().then(function(user) {
-        $scope.current_user = user;
-        return $scope.$digest();
+        return $scope.current_user = user;
       });
     };
     window.onclose = function() {

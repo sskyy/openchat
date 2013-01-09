@@ -3,34 +3,13 @@
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
   
   $user = {};
-  $user.user_detect = ( platform ) ->
-    q = $q.defer()
+  
+  get_user_info = ()->
+    return $http.jsonp("/oauth/user_info?callback=JSON_CALLBACK")
+  
+  user_login = ()->
+    q = $q.defer();
     oauth_id = null
-    
-    get_user_name = ( uid, access_token )->
-      url = 'https://api.weibo.com/2/users/show.json'
-      params = {uid, access_token}
-      $http.jsonp(url,{params}).success( (user)->
-        console.log( user )
-        q.resolve( user )
-      ).error( () ->
-        console.log("error")
-        q.reject()
-      )
-    
-    get_access_token_interval = ( oauth_id ) ->
-      return if !oauth_id 
-      interval_limit = 50
-      interval = $window.setInterval( ()->
-        $window.clearInterval( interval ) if !interval_limit--
-        $http.jsonp("/oauth/access_token?oauth_id=#{oauth_id }&callback=JSON_CALLBACK").success( (data)->
-          console.log( data );
-          $window.clearInterval( interval )
-          get_user_name( data.uid, data.access_token )
-        )
-      , 1000)  
-      
-      
     $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
       oauth_id = data.oauth_id
       console.log oauth_id
@@ -42,14 +21,38 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       
       window.open url+param 
       
-      get_access_token_interval( oauth_id )
+      interval_limit = 50
+      interval = $window.setInterval( ()->
+        if !interval_limit
+          $window.clearInterval( interval ) 
+          return q.reject()
+        get_user_info().then((user)->
+          q.resolve(user)
+        ,()->
+          interval_limit--
+        )
+      , 1000)  
       
     ).error( (err)->
       console.log('apply_oauth_id err', err)
+      q.reject()
     )
-    
+    return q.promise
+  
+  $user.user_detect = ( platform ) ->
+    q = $q.defer()
+    get_user_info().success( (user)->
+      #logged in already
+      q.resolve( user )
+    ).error(()->
+      #need login
+      user_login().then( ( user )->
+        q.resolve( user )
+      )
+    )
+      
+      
     return q.promise;
     
   return $user;
-  
 )
