@@ -47,7 +47,10 @@ function listen_server( server, io ){
     })
     
     server.get('/oauth/user_info', function(req, res){
-        console.log( req.session.user )
+        if( server.DEBUG_MODE ){
+            req.session.user = generate_randome_user()
+        }
+        
         if( 'user' in req.session && 'openchatId' in req.session.user ){
             return res.jsonp( req.session.user )
         }
@@ -71,5 +74,17 @@ function generate_id(){
         id = Date.parse( new Date())
     }
     return id;
+}
+
+function generate_randome_user(){
+    var id = parseInt( Math.random()*10 + 1)
+    var name = 'oc'+ id
+    var platform = 'weibo'
+    return {
+        name : name,
+        id : id,
+        openchatId : id + '@' + platform,
+        platform : platform
+    }
 }
 

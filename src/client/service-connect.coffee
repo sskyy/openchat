@@ -44,10 +44,11 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root.times++
       return root
       
-    disconnect : ()->
+    disconnect : ( silent )->
       root = this
       $window.clearInterval( this.heartbeat )
       root.connected = false
+      $http.jsonp(this.url+'/emit',{params:{connectId:root.connectId,'event':'disconnect'}}) unless silent
       
     emit: ( event, data)->
       return false if not this.connected 
@@ -61,20 +62,24 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root._events[event] = [] unless event of root._events
       root._events[event].push({callback,context})
       
-#    off: ( event )->
-    
     _recieve: () ->
       return false if not this.connected
       this.disconnect() if this.failures > this.failuresLimit
       root = this;
-      params = {callback:'JSON_CALLBACK',connectId:root.connectId}
-      $http.jsonp(this.url+'/recieve',{params})
-      .success( ( res )->
-        return root.disconnect() if "error" of res
+      params = {callback:'JSON_CALLBACK',connectId:root.connectId, t:Date.parse(new Date())}
+      $http.jsonp(this.url+'/recieve',{params}).then(( res )->
+        return root.disconnect( true ) if "error" of res.data
         root.failures = 0
-        for event in res
+        for event in res.data
           root._call_callbacks( event.event, event.data )
-      ).error(( res )->
+      ,( res )->
+        if( res.status == 502 )
+          console.log( 'server down')
+          return root.disconnect( true );
+        if( res.status == 401 )
+          console.log('u have been kicked out')
+          return root.disconnect( true )
+          
         return root.failures++;
       )
       

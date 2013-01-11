@@ -7,6 +7,9 @@ server.listen(8000);
 app.use(express.cookieParser());
 app.use(express.cookieSession({key:'connect.sess',secret:'openchat'}));
 
+if( process.env.NODE_SERVER_MODE == 'debug')
+    app.DEBUG_MODE = true
+
 //using socket.io
 //var io = require('./openchat.js').listen(server);
 

@@ -128,9 +128,9 @@ chat = {
     if (_ref = !req.query.event, __indexOf.call(this, _ref) >= 0) {
       return res.jsonp(404, {});
     }
-    if (!users[req.session.user.openchatId].connectId === req.query.connectId) {
-      return req.jsonp(401, {
-        message: 'you have been kicked out'
+    if (!(users[req.session.user.openchatId] != null) || !(users[req.session.user.openchatId].connectId === parseInt(req.query.connectId))) {
+      return res.jsonp(401, {
+        message: 'u have been kicked out.'
       });
     }
     root = this;
@@ -139,9 +139,9 @@ chat = {
   send_message: function(req, res) {
     var data, event;
     data = JSON.parse(req.query.data);
-    console.log(data);
-    if (!(data.target in users) || !users[data.target].connectId) {
-      return console.log(data.target, ' not online, message saved to database.');
+    console.log("sending message to ", data.target.openchatId, data);
+    if (!(data.target.openchatId in users) || !users[data.target.openchatId].connectId) {
+      return console.log(data.target.openchatId, ' not online, message saved to database. users:');
     }
     event = {
       event: 'get_message',
@@ -150,21 +150,24 @@ chat = {
         message: data.message
       }
     };
-    return users[data.target].events.push(event);
+    return users[data.target.openchatId].events.push(event);
   },
   recieve: function(req, res) {
-    var _ref, _ref1;
+    var events, _ref, _ref1;
     if (!(((_ref = users[req.session.user.openchatId]) != null ? _ref.connectId : void 0) === parseInt(req.query.connectId))) {
       console.log(users, (_ref1 = users[req.session.user.openchatId]) != null ? _ref1.connectId : void 0, req.query.connectId);
       return res.jsonp(200, {
         error: 'you have been kicked out'
       });
     }
-    return res.jsonp(200, users[req.session.user.openchatId].events.splice(0));
+    events = users[req.session.user.openchatId].events.splice(0);
+    return res.jsonp(200, events);
   },
   disconnect: function(req, res) {
-    if (req.query.connectId === users[req.session.user.openchatId].connectId) {
-      return users[req.session.user.openchatId].connectId === null;
+    if (parseInt(req.query.connectId) === users[req.session.user.openchatId].connectId) {
+      console.log(req.session.user.openchatId, " logged out");
+      delete users[req.session.user.openchatId];
+      return this._notify_all_user('update_users', this._output_all_users());
     }
   },
   _generate_id: function(collection) {

@@ -42,17 +42,19 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
   $user.user_detect = ( platform ) ->
     q = $q.defer()
     get_user_info().success( (user)->
-      #logged in already
+      $user.user = user;
       q.resolve( user )
     ).error(()->
-      #need login
       user_login().then( ( user )->
+        $user.user = user
         q.resolve( user )
       )
     )
-      
-      
     return q.promise;
+    
+  $user.get_current = ()->
+    console.log( "current_user", $user.user? && $user.user || null )
+    return $user.user? && $user.user || null 
     
   return $user;
 )

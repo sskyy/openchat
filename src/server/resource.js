@@ -18,13 +18,16 @@ function json_handler( req, res ){
         if(/\.html$/.test(req.query.resource)){
             resourceContent = minify.minify( resourceContent,{
                 collapseWhitespace: true
-            } )
+            })
         }
         
         res.set({
             'Content-Type': 'text/javascript'
         });
         res.jsonp( 200, resourceContent );
+    }else{
+        console.log( "resource not in query")
+        res.end()
     }
 }
 

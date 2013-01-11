@@ -58,6 +58,7 @@ chat =
     root = this
     if !req.session.user
       return res.jsonp(501,{message:'login first.'}) 
+      
     users[req.session.user.openchatId] ?= _.extend({
       events : 
         [{event:'get_message', data:{source:{platform:'openchat',name:'server'},message:'welcome'}}]
@@ -87,31 +88,34 @@ chat =
   emit : ( req, res )->
     if not req.query.event in this 
       return res.jsonp(404, {})
-    if not users[req.session.user.openchatId].connectId == req.query.connectId
-      return req.jsonp(401,{message:'you have been kicked out'}) 
+    if( !users[req.session.user.openchatId]? or not (users[req.session.user.openchatId].connectId == parseInt(req.query.connectId)) )
+      return res.jsonp(401,{message:'u have been kicked out.'})
     root = this
     return root[req.query.event]( req, res)
     
   send_message : ( req, res )->
     data = JSON.parse( req.query.data );
-    console.log( data );
-    if !(data.target of users ) or !( users[data.target].connectId )
+    console.log( "sending message to ", data.target.openchatId, data );
+    if !(data.target.openchatId of users ) or !( users[data.target.openchatId].connectId )
       ##´æµ½Êý¾Ý¿â
-      return console.log( data.target, ' not online, message saved to database.' )
+      return console.log( data.target.openchatId, ' not online, message saved to database. users:' )
       
     event = {event:'get_message', data:{source:req.session.user,message:data.message}}
-    return users[data.target].events.push( event )
+    return users[data.target.openchatId].events.push( event )
   
   recieve : ( req, res )->
     if !(users[req.session.user.openchatId]?.connectId == parseInt( req.query.connectId) )
       console.log( users, users[req.session.user.openchatId]?.connectId, req.query.connectId)
       return res.jsonp(200,{error:'you have been kicked out'}) 
-    return res.jsonp(200, users[req.session.user.openchatId].events.splice(0))
+      
+    events = users[req.session.user.openchatId].events.splice(0)
+    return res.jsonp(200, events)
     
   disconnect : ( req, res)->
-    if( req.query.connectId == users[ req.session.user.openchatId ].connectId )
-      return users[ req.session.user.openchatId ].connectId == null
-    
+    if( parseInt(req.query.connectId) == users[ req.session.user.openchatId ].connectId )
+      console.log( req.session.user.openchatId ," logged out")
+      delete users[ req.session.user.openchatId ]
+      this._notify_all_user('update_users', this._output_all_users())
   
   _generate_id : ( collection ) ->
     return this._now()
