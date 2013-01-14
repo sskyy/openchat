@@ -24,6 +24,10 @@ module.exports = function(grunt) {
             github : {
                 files : ['src/grunt/github.message'],
                 tasks : ['github-commit:push']
+            },
+            all_in_one : {
+                files : ['src/client/initialize.js','src/client/openchat-all.js'],
+                tasks : ['build-openchat-all']
             }
         },
         coffee : {

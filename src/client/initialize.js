@@ -1,4 +1,6 @@
 ~function(){
+    var TOOLHOST = /^127/.test(window.location.host) ? "http://127.0.0.1:8000" 
+    : "http://loghelper.offline.bae.baidu.com";
     angular.module('initialize',[]).run(function( $http ){
         function append_template( template ){
             var htmlRef = angular.element(template);
@@ -12,7 +14,8 @@
             return str;
         }
         
-        $http.jsonp(TOOLHOST+'/build/openchat.tpl.html').error(function(){
+        
+        $http.jsonp(TOOLHOST+'/resource/jsonp?resource=build/client/openchat.tpl.html&callback=JSON_CALLBACK').error(function(){
             console.log("get template error");
         }).success(function( html ){
             append_template( decode_entity_quote( html ) );

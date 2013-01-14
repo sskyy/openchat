@@ -64,6 +64,7 @@ module.exports = function( grunt ){
             var done = this.async();
         }
         
+        
         //generate build/openchat.coffee
         grunt.helper('include', 
             { formats: { 
