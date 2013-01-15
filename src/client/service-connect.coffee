@@ -20,7 +20,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   $connect = 
     _events : {},
     _connectId : null
-    url:'/chat',
+    url:'<%=config.host%>:<%=config.port%>/chat',
     interval : 1000,
     heartbeat : null,
     connected : false,
@@ -93,5 +93,4 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
             
   return $connect;
   
-
 )  

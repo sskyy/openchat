@@ -33,7 +33,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   $connect = 
     _events : {},
     _connectId : null
-    url:'/chat',
+    url:'jieq1u3u19.elb7.stacklab.org:80/chat',
     interval : 1000,
     heartbeat : null,
     connected : false,
@@ -106,22 +106,21 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
             
   return $connect;
   
-
 )  
 
 
 #user main file
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
-  
+  base = 'jieq1u3u19.elb7.stacklab.org:80'
   $user = {};
   
   get_user_info = ()->
-    return $http.jsonp("/oauth/user_info?callback=JSON_CALLBACK")
+    return $http.jsonp( base+"/oauth/user_info?callback=JSON_CALLBACK")
   
   user_login = ()->
     q = $q.defer();
     oauth_id = null
-    $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
+    $http.jsonp(base+'/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
       oauth_id = data.oauth_id
       console.log oauth_id
       

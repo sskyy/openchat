@@ -1,16 +1,16 @@
 
 #user main file
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
-  
+  base = '<%=config.host%>:<%=config.port%>'
   $user = {};
   
   get_user_info = ()->
-    return $http.jsonp("/oauth/user_info?callback=JSON_CALLBACK")
+    return $http.jsonp( base+"/oauth/user_info?callback=JSON_CALLBACK")
   
   user_login = ()->
     q = $q.defer();
     oauth_id = null
-    $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
+    $http.jsonp(base+'/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
       oauth_id = data.oauth_id
       console.log oauth_id
       

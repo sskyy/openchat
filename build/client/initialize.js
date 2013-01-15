@@ -1,4 +1,5 @@
 ~function(){
+    TOOLHOST = 
     angular.module('initialize',[]).run(function( $http ){
         function append_template( template ){
             var htmlRef = angular.element(template);

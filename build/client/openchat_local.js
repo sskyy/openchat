@@ -16,7 +16,7 @@ angular.module('openchat.service').service('$connect', function($http, $window, 
   $connect = {
     _events: {},
     _connectId: null,
-    url: '/chat',
+    url: '127.0.0.1:8000/chat',
     interval: 1000,
     heartbeat: null,
     connected: false,
@@ -152,16 +152,17 @@ angular.module('openchat.service').service('$connect', function($http, $window, 
 });
 
 angular.module('openchat.service').service('$user', function($q, $http, $window) {
-  var $user, get_user_info, user_login;
+  var $user, base, get_user_info, user_login;
+  base = '127.0.0.1:8000';
   $user = {};
   get_user_info = function() {
-    return $http.jsonp("/oauth/user_info?callback=JSON_CALLBACK");
+    return $http.jsonp(base + "/oauth/user_info?callback=JSON_CALLBACK");
   };
   user_login = function() {
     var oauth_id, q;
     q = $q.defer();
     oauth_id = null;
-    $http.jsonp('/oauth/apply_oauth_id?callback=JSON_CALLBACK').success(function(data) {
+    $http.jsonp(base + '/oauth/apply_oauth_id?callback=JSON_CALLBACK').success(function(data) {
       var interval, interval_limit, param, url;
       oauth_id = data.oauth_id;
       console.log(oauth_id);

@@ -62,19 +62,31 @@ module.exports = function( grunt ){
     grunt.registerTask("build-openchat-all", function(){
         if( in_array( 'async',this.args) ){
             var done = this.async();
+            var asyncTasks = ['openchat-all.coffee'];
         }
         
         
-        //generate build/openchat.coffee
+        //generate build/openchat-all.coffee
         grunt.helper('include', 
             { formats: { 
-                    '.js': '//\\{include "(.*?)"\\}'
+                    '.coffee': '#\\{include "(.*?)"\\}'
                 },
                 include: ['./','build/client/'],
-                rules: [{ src: 'src/client/openchat-all.js', dst: 'build/client/'}] },
+                rules: [{ src: 'src/client/openchat-all.coffee', dst: 'build/client/'}] },
             function(err){
-                done && done();
+                var coffeeFile = fs.readFileSync( 'build/client/openchat-all.coffee').toString();
+                fs.writeFileSync( 'build/client/openchat-all.coffee',
+                grunt.template.process( coffeeFile, globalConfig) )
+                
+                fs.writeFileSync( 'build/client/openchat-all_local.coffee',
+                grunt.template.process( coffeeFile, globalConfigLocal ) )
+                if( done ){
+                    asyncTasks.splice(0,1)
+                    asyncTasks.length == 0 &&done()
+                }
         });
+        
+        
     })
     
     function in_array( val, arr ){

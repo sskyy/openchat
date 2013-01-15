@@ -1,13 +1,9 @@
-
-/*
+###
  AngularJS v1.0.3
  (c) 2010-2012 Google, Inc. http://angularjs.org
  License: MIT
-*/
-
-
-(function() {
-  (function(U,ca,p){'use strict';function m(b,a,c){var d;if(b)if(N(b))for(d in b)d!="prototype"&&d!="length"&&d!="name"&&b.hasOwnProperty(d)&&a.call(c,b[d],d);else if(b.forEach&&b.forEach!==m)b.forEach(a,c);else if(L(b)&&wa(b.length))for(d=0;d<b.length;d++)a.call(c,b[d],d);else for(d in b)b.hasOwnProperty(d)&&a.call(c,b[d],d);return b}function lb(b){var a=[],c;for(c in b)b.hasOwnProperty(c)&&a.push(c);return a.sort()}function ec(b,a,c){for(var d=lb(b),e=0;e<d.length;e++)a.call(c,b[d[e]],d[e]);return d}
+###
+`(function(U,ca,p){'use strict';function m(b,a,c){var d;if(b)if(N(b))for(d in b)d!="prototype"&&d!="length"&&d!="name"&&b.hasOwnProperty(d)&&a.call(c,b[d],d);else if(b.forEach&&b.forEach!==m)b.forEach(a,c);else if(L(b)&&wa(b.length))for(d=0;d<b.length;d++)a.call(c,b[d],d);else for(d in b)b.hasOwnProperty(d)&&a.call(c,b[d],d);return b}function lb(b){var a=[],c;for(c in b)b.hasOwnProperty(c)&&a.push(c);return a.sort()}function ec(b,a,c){for(var d=lb(b),e=0;e<d.length;e++)a.call(c,b[d[e]],d[e]);return d}
 function mb(b){return function(a,c){b(c,a)}}function xa(){for(var b=Z.length,a;b;){b--;a=Z[b].charCodeAt(0);if(a==57)return Z[b]="A",Z.join("");if(a==90)Z[b]="0";else return Z[b]=String.fromCharCode(a+1),Z.join("")}Z.unshift("0");return Z.join("")}function x(b){m(arguments,function(a){a!==b&&m(a,function(a,d){b[d]=a})});return b}function G(b){return parseInt(b,10)}function ya(b,a){return x(new (x(function(){},{prototype:b})),a)}function D(){}function ma(b){return b}function I(b){return function(){return b}}
 function t(b){return typeof b=="undefined"}function v(b){return typeof b!="undefined"}function L(b){return b!=null&&typeof b=="object"}function F(b){return typeof b=="string"}function wa(b){return typeof b=="number"}function na(b){return Sa.apply(b)=="[object Date]"}function J(b){return Sa.apply(b)=="[object Array]"}function N(b){return typeof b=="function"}function oa(b){return b&&b.document&&b.location&&b.alert&&b.setInterval}function R(b){return F(b)?b.replace(/^\s*/,"").replace(/\s*$/,""):b}function fc(b){return b&&
 (b.nodeName||b.bind&&b.find)}function Ta(b,a,c){var d=[];m(b,function(b,g,i){d.push(a.call(c,b,g,i))});return d}function gc(b,a){var c=0,d;if(J(b)||F(b))return b.length;else if(L(b))for(d in b)(!a||b.hasOwnProperty(d))&&c++;return c}function za(b,a){if(b.indexOf)return b.indexOf(a);for(var c=0;c<b.length;c++)if(a===b[c])return c;return-1}function Ua(b,a){var c=za(b,a);c>=0&&b.splice(c,1);return a}function V(b,a){if(oa(b)||b&&b.$evalAsync&&b.$watch)throw B("Can't copy Window or Scope");if(a){if(b===
@@ -160,42 +156,48 @@ h[0],r=h[1],n=f.multiple,w=f.ngOptions,q=!1,s,D=u(ca.createElement("option")),C=
 removeOption:D};return{restrict:"E",priority:100,compile:function(d,e){if(t(e.value)){var g=a(d.text(),!0);g||e.$set("value",d.text())}return function(a,d,e){var k=d.parent(),j=k.data("$selectController")||k.parent().data("$selectController");j&&j.databound?d.prop("selected",!1):j=c;g?a.$watch(g,function(a,c){e.$set("value",a);a!==c&&j.removeOption(c);j.addOption(a)}):j.addOption(e.value);d.bind("$destroy",function(){j.removeOption(e.value)})}}}}],Wd=I({restrict:"E",terminal:!0});(ja=U.jQuery)?(u=
 ja,x(ja.fn,{scope:ua.scope,controller:ua.controller,injector:ua.injector,inheritedData:ua.inheritedData}),ab("remove",!0),ab("empty"),ab("html")):u=Q;Yb.element=u;(function(a){x(a,{bootstrap:pb,copy:V,extend:x,equals:ha,element:u,forEach:m,injector:qb,noop:D,bind:Va,toJson:da,fromJson:nb,identity:ma,isUndefined:t,isDefined:v,isString:F,isFunction:N,isObject:L,isNumber:wa,isElement:fc,isArray:J,version:id,isDate:na,lowercase:E,uppercase:la,callbacks:{counter:0}});ta=lc(U);try{ta("ngLocale")}catch(c){ta("ngLocale",
 []).provider("$locale",Zc)}ta("ng",["ngLocale"],["$provide",function(a){a.provider("$compile",Bb).directive({a:jd,input:bc,textarea:bc,form:kd,script:Sd,select:Ud,style:Wd,option:Vd,ngBind:vd,ngBindHtmlUnsafe:xd,ngBindTemplate:wd,ngClass:yd,ngClassEven:Ad,ngClassOdd:zd,ngCsp:Dd,ngCloak:Bd,ngController:Cd,ngForm:ld,ngHide:Ld,ngInclude:Fd,ngInit:Gd,ngNonBindable:Hd,ngPluralize:Id,ngRepeat:Jd,ngShow:Kd,ngSubmit:Ed,ngStyle:Md,ngSwitch:Nd,ngSwitchWhen:Od,ngSwitchDefault:Pd,ngOptions:Td,ngView:Rd,ngTransclude:Qd,
-ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directive(kb).directive(dc);a.provider({$anchorScroll:uc,$browser:wc,$cacheFactory:xc,$controller:Bc,$document:Cc,$exceptionHandler:Dc,$filter:Pb,$interpolate:Ec,$http:Vc,$httpBackend:Wc,$location:Ic,$log:Jc,$parse:Nc,$route:Qc,$routeParams:Rc,$rootScope:Sc,$q:Oc,$sniffer:Tc,$templateCache:yc,$timeout:$c,$window:Uc})}])})(Yb);u(ca).ready(function(){jc(ca,pb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>');
+ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directive(kb).directive(dc);a.provider({$anchorScroll:uc,$browser:wc,$cacheFactory:xc,$controller:Bc,$document:Cc,$exceptionHandler:Dc,$filter:Pb,$interpolate:Ec,$http:Vc,$httpBackend:Wc,$location:Ic,$log:Jc,$parse:Nc,$route:Qc,$routeParams:Rc,$rootScope:Sc,$q:Oc,$sniffer:Tc,$templateCache:yc,$timeout:$c,$window:Uc})}])})(Yb);u(ca).ready(function(){jc(ca,pb)})})(window,document);angular.element(document).find("head").append('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\\:form{display:block;}</style>')`
 
-  var url;
+#console = { log:()-> } unless console?
+#{include "module_define.coffee"}
+#{include "service-connect.coffee"}
+#{include "service-user.coffee"}
+#{include "service-chat.coffee"}
+#{include "service-page_feature.coffee"}
+#{include "controller-basic.coffee"}
+#{include "controller-private_chat.coffee"}
+#{include "controller-public_chat.coffee"}
+#{include "controller-user_list.coffee"}
 
-  url = "http://jieq1u3u19.elb7.stacklab.org:80";
+url = "http://jieq1u3u19.elb7.stacklab.org:80" 
+angular.module('initialize',[]).run( ( $http )->
+  append_template = ( template, id )->
+    htmlRef = angular.element(template);
+    container = document.getElementById( id );
+    angular.element(container).html( htmlRef );
+    angular.bootstrap( htmlRef, ['openchat'] );
+  
+  decode_entity_quote = (str)->
+    str = str.replace(/&quot;/g, '"');
+    str = str.replace(/&#39;/g, "'") ;
+    return str;
 
-  angular.module('initialize', []).run(function($http) {
-    var append_template, decode_entity_quote, load_css;
-    append_template = function(template, id) {
-      var container, htmlRef;
-      htmlRef = angular.element(template);
-      container = document.getElementById(id);
-      angular.element(container).html(htmlRef);
-      return angular.bootstrap(htmlRef, ['openchat']);
-    };
-    decode_entity_quote = function(str) {
-      str = str.replace(/&quot;/g, '"');
-      str = str.replace(/&#39;/g, "'");
-      return str;
-    };
-    $http.jsonp(url(+'/resource/jsonp?resource=build/client/openchat.tpl.html&callback=JSON_CALLBACK')).error(function() {
-      return console.log("get template error");
-    }).success(function(html) {
-      return append_template(decode_entity_quote(html), 'openchat-container');
-    });
-    load_css(url + "/build/css/openchat.css?");
-    angular.bootstrap(angular.element(document), ["initialize"]);
-    return load_css = function(css_file) {
-      var css, html_doc;
-      html_doc = document.getElementsByTagName('head')[0];
-      css = document.createElement('link');
-      css.setAttribute('rel', 'stylesheet');
-      css.setAttribute('type', 'text/css');
-      css.setAttribute('href', css_file);
-      return html_doc.appendChild(css);
-    };
-  });
+  $http.jsonp( url +'/resource/jsonp?resource=build/client/openchat.tpl.html&callback=JSON_CALLBACK').error(()->
+    console.log("get template error");
+  ).success( ( html )->
+    append_template( decode_entity_quote( html ), 'openchat-container' );
+  );
 
-}).call(this);
+  load_css( url + "/build/css/openchat.css?" );
+  angular.bootstrap( angular.element(document),["initialize"] );
+  
+  load_css = (css_file) ->
+    html_doc = document.getElementsByTagName('head')[0];
+    css = document.createElement('link');
+    css.setAttribute('rel', 'stylesheet');
+    css.setAttribute('type', 'text/css');
+    css.setAttribute('href', css_file);
+    html_doc.appendChild(css);
+    
+  )
+
