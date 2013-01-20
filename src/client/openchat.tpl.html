@@ -15,23 +15,41 @@
                 </div>
             </div>
         </div>
-        <div ng-controller="private_chat">
-            <div  class="row" >
-                <div class="span6">
-                    <div class="row" ng-repeat="user in conversations">
-                        <span class="span1 btn"><span class="icon-user"></span>{{user.name}}</span>
-                        <div class="span6 alert" ng-repeat="message in user.messages" ng-class="message.source.openchatId==current_user.openchatId && 'tar'">
-                            {{message.message}}
+        <div ng-controller="private_chat"  id="chat_window_container">
+            <div id="chat_window_shortcut" ng-show="chat_window_status.mode=='shortcut'">
+                <span class="user_shortcut" ng-repeat="user in conversations" ng-click="chat_window_status.mode='full'">{{user.name}}</span>
+            </div>
+            
+            <div id="chat_window" ng-show="chat_window_status.mode=='full'">
+                <div id="chat_window_user_head">
+                    <span id="chat_window_user_head_avatar" ng-show="current_conversation.avatar" >
+                        <img src="{{current_conversation.avatar}}">
+                    </span>
+                    <span id="chat_window_user_head_name">{{ current_conversation.name }}</span>
+                    <span id="chat_window_close" ng-click="chat_window_status.mode='shortcut'">X</span>
+                </div>
+                <div>
+                    <div id="chat_window_user_list" ng-show="object_length( conversations)>1">
+                        <div class="chat_window_user_name" ng-show="current_conversation.name!=user.name" ng-repeat="user in conversations">
+                            <span ng-click="set_current_conversation(user)">{{ user.name }}</span>
                         </div>
-                        <div  class="form-inline span6" ng-init="_message=null" ng-show="user.name!='server'"> 
-                            <input type="text" ng-model="_message"class="span4">
+                    </div>
+                    <div id="chat_window_main">
+                        <div id="chat_window_current_conversation">
+                            <div ng-repeat="message in current_conversation.messages">
+                                <div class="message" ng-class="message.source.name==current_user.name&&'mine'">{{message.message}}</div>
+                            </div>
+                        </div>
+                        <div  id="chat_window_send_message" ng-init="_message=null" ng-show="user.name!='server'"> 
+                            <textarea ng-model="_message" ></textarea>
                             <input type="button" class="btn" ng-click="send_message( _message, user)" value="send">
                         </div>
                     </div>
                 </div>
             </div>
+            
         </div>
-        <div ng-controller="user_list">
+        <div ng-controller="user_list" id="user_list_container">
             <div id="user_list">
                 <div class="row"  ng-repeat="user in users" ng-click="set_target(user)">
                     <div class="btn span1 tal">

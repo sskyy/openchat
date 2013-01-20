@@ -5,15 +5,29 @@
 
 module.exports = function( grunt ){
     var globalConfig = require('../config.js');
-    var globalConfigLocal = require('../config_local.js');
-    var fs = require('fs');
+    var async = require('async');
+    var coffee = require('coffee-script');
     grunt.registerTask("build-openchat", function(){
-        if( in_array( 'async',this.args) ){
+        if( grunt.utils._.indexOf( this.args, 'async') != -1 ){
             var done = this.async();
-            var asyncTasks = ['openchat.coffee','openchat_runner.html'];
         }
-        
-        
+        async.parallel([function( counter ){
+            //generate build/openchat.js
+            build_openchat_js(function(){
+                counter()
+            })    
+        },function( counter ){
+            //build openchat_runner.html
+            build_openchat_runner(function(){
+                counter()
+            })
+        }],function(){
+            done&&done()
+        })
+    });
+    
+    function build_openchat_coffee( callback ){
+        console.log('beging to build openchat.coffee');
         //generate build/openchat.coffee
         grunt.helper('include', 
             { formats: { 
@@ -24,19 +38,58 @@ module.exports = function( grunt ){
                 include: ['./'],
                 rules: [{ src: 'src/client/openchat.coffee', dst: 'build/client/'}] },
             function(err){
+                console.log( 'build openchat.coffee finished.')
                 //replace global values
-                var coffeeFile = fs.readFileSync( 'build/client/openchat.coffee').toString();
-                fs.writeFileSync( 'build/client/openchat.coffee',
-                grunt.template.process( coffeeFile, globalConfig) )
+                var coffeeFile = grunt.file.read( 'build/client/openchat.coffee');
                 
-                fs.writeFileSync( 'build/client/openchat_local.coffee',
-                grunt.template.process( coffeeFile, globalConfigLocal ) )
-                if( done ){
-                    asyncTasks.splice(0,1)
-                    asyncTasks.length == 0 &&done()
-                }
+                var buildFns = [];
+                var build = Date.parse( new Date())
+                grunt.utils._.each( globalConfig,function(  config, type){
+                    buildFns.push( function( counter ){
+                        grunt.file.write( 'build/client/openchat-'+type+'.coffee',
+                            grunt.template.process( coffeeFile, {_openchat_build:build, config:config}) )
+                        console.log("finished openchat-"+type+".coffee")
+                        counter();
+                    })
+                });
+                async.parallel( buildFns, function(){
+                    
+                    var httpOptions = {
+                            host : globalConfig.developement.host,
+                            path : '/build_spy/set_build?build='+build,
+                            port : globalConfig.developement.port,
+                            method : 'GET',
+                            headers: {
+                                'Content-Length': 0
+                            }
+                        }
+                        console.log( httpOptions)
+                    var http = require("http")
+                    var req = http.request(httpOptions, function(res) {});
+                    req.end();
+                    req.on('error', function(e) {
+                        console.error(e);
+                    });
+                    
+                    callback&&callback( err );
+                });
         });
-        
+    }
+    
+    //TODO :compile coffee
+    function build_openchat_js( callback ){
+        build_openchat_coffee(function(){
+            console.log('beging to compile openchat.coffee');
+            grunt.utils._.each( globalConfig,function(  config, type){
+                grunt.file.write( 'build/client/openchat-'+type+'.js', 
+                    coffee.compile( grunt.file.read('build/client/openchat-'+type+'.coffee')))
+            })
+            console.log('finished compile openchat.coffee');
+            callback&&callback();
+        })
+    }
+    
+    function build_openchat_runner( callback ){
         //build openchat_runner.html
         grunt.helper('include', 
             { formats: { 
@@ -45,57 +98,49 @@ module.exports = function( grunt ){
                 include: ['./'],
                 rules: [{ src: 'src/client/openchat_runner.tpl.html', dst: 'build/client/'}] },
             function(err){
-                //replace global values
-                fs.writeFileSync( './build/client/openchat_runner.html',
-                    grunt.template.process( fs.readFileSync( './build/client/openchat_runner.tpl.html').toString(), globalConfig) )
-
-                //build openchat_runner_local.html
-                fs.writeFileSync( './build/client/openchat_runner_local.html',
-                    grunt.template.process( fs.readFileSync( './build/client/openchat_runner.tpl.html').toString(), globalConfigLocal) )
-                if( done ){
-                    asyncTasks.splice(0,1)
-                    asyncTasks.length == 0 &&done() 
-                }
+                    
+                var buildFns = [];
+                var runnerHtml = grunt.file.read( './build/client/openchat_runner.tpl.html')
+                grunt.utils._.each( globalConfig,function(  config, type){
+                    buildFns.push( function(){
+                        grunt.file.write( 'build/client/openchat_runner-'+type+'.html',
+                            grunt.template.process( runnerHtml, {config:config, type:type}) )
+                    })
+                });
+                async.parallel( buildFns, function(){
+                    callback&&callback( err );
+                });
         });
-    });
+    }
     
     grunt.registerTask("build-openchat-all", function(){
-        if( in_array( 'async',this.args) ){
+        if( grunt.utils._.indexOf( this.args, 'async') !== -1 ){
             var done = this.async();
-            var asyncTasks = ['openchat-all.coffee'];
         }
-        
-        
-        //generate build/openchat-all.coffee
-        grunt.helper('include', 
-            { formats: { 
-                    '.coffee': '#\\{include "(.*?)"\\}'
-                },
-                include: ['./','build/client/'],
-                rules: [{ src: 'src/client/openchat-all.coffee', dst: 'build/client/'}] },
-            function(err){
-                var coffeeFile = fs.readFileSync( 'build/client/openchat-all.coffee').toString();
-                fs.writeFileSync( 'build/client/openchat-all.coffee',
-                grunt.template.process( coffeeFile, globalConfig) )
-                
-                fs.writeFileSync( 'build/client/openchat-all_local.coffee',
-                grunt.template.process( coffeeFile, globalConfigLocal ) )
-                if( done ){
-                    asyncTasks.splice(0,1)
-                    asyncTasks.length == 0 &&done()
-                }
+        build_openchat_js(function(){
+            //连接angular.js  build好的openchat.js 编译好的initialize文件
+            var buildFns = [];
+            var angularMin = grunt.file.read('src/client/angular.min.js');
+            var initializeJs = coffee.compile( grunt.file.read('src/client/initialize.coffee'));
+            grunt.utils._.each( globalConfig,function(  config, type ){
+                buildFns.push( function( counter ){
+                    var content = [angularMin,
+                        grunt.file.read('build/client/openchat-'+type+'.js'),
+                        grunt.template.process( initializeJs, {config:config})]
+                    
+                    grunt.file.write( 'build/client/openchat-all-'+type+'.js', content.join(';\n') );
+                    counter()
+                })
+            });
+            async.parallel( buildFns, function(){
+                done&&done();
+            });
         });
-        
-        
     })
     
-    function in_array( val, arr ){
-        for( var i in arr ){
-            if( arr[i] == val ){
-                return true
-            }
-        }
-        return false;
-    }
+    grunt.registerTask("build-template", function(){
+        grunt.file.write('build/client/openchat.tpl.html',grunt.file.read('src/client/openchat.tpl.html'))
+    })
+    
     
 };

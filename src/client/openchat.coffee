@@ -1,4 +1,7 @@
+
 #console = { log:()-> } unless console?
+
+window._OPENCHAT_BUILD = '<%=_openchat_build%>'
 #{include "module_define.coffee"}
 #{include "service-connect.coffee"}
 #{include "service-user.coffee"}

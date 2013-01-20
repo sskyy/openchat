@@ -20,6 +20,8 @@ require('./oauth.js').listen( app );
 
 require('./github.js').listen( app );
 
+require('./build_spy.js').listen( app );
+
 //must be last. resource.js listen route /* which may overrite other 
 //listener which registered after resource.js
 require('./resource.js').listen( app );

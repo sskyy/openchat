@@ -1,11 +1,10 @@
+
 #console = { log:()-> } unless console?
+
+window._OPENCHAT_BUILD = '<%=_openchat_build%>'
 
 angular.module('openchat.service',[])
 angular.module('openchat', ['openchat.service'])
-
-
-
-
 
 
 
@@ -16,7 +15,7 @@ angular.module('openchat', ['openchat.service'])
 
 #angular.module('openchat.service',[])
 #.service('$connect', () ->
-#  url = 'jieq1u3u19.elb7.stacklab.org/chat'
+#  url = '<%= config.host%>/chat'
 #  if( typeof( io) == undefined )
 #    console.log( "socket.io not exist");
 #    return {};
@@ -33,7 +32,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   $connect = 
     _events : {},
     _connectId : null
-    url:'jieq1u3u19.elb7.stacklab.org:80/chat',
+    url:'http://<%=config.host%>:<%=config.port%>/chat',
     interval : 1000,
     heartbeat : null,
     connected : false,
@@ -42,10 +41,10 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
     times : 0,
     connect : ()->
       root = this
-      console.log root.connected
+      console.log "is connected?", root.connected
       return this if root.connected
       params = {callback:'JSON_CALLBACK'}
-      $http.jsonp( this.url+'/connect',{params}).success(( res )->
+      $http.jsonp( "#{this.url}/connect",{params}).success(( res )->
         root.heartbeat = $window.setInterval(()->
           root._recieve()
         ,root.interval)
@@ -61,13 +60,13 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root = this
       $window.clearInterval( this.heartbeat )
       root.connected = false
-      $http.jsonp(this.url+'/emit',{params:{connectId:root.connectId,'event':'disconnect'}}) unless silent
+      $http.jsonp("#{this.url}/emit",{params:{connectId:root.connectId,'event':'disconnect'}}) unless silent
       
     emit: ( event, data)->
       return false if not this.connected 
       root = this
       params = {event, data, connectId:root.connectId,callback:'JSON_CALLBACK'}
-      $http.jsonp(this.url+'/emit',{params})
+      $http.jsonp("#{this.url}/emit",{params})
       
     on: ( event, callback, context ) ->
       root = this
@@ -80,7 +79,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       this.disconnect() if this.failures > this.failuresLimit
       root = this;
       params = {callback:'JSON_CALLBACK',connectId:root.connectId, t:Date.parse(new Date())}
-      $http.jsonp(this.url+'/recieve',{params}).then(( res )->
+      $http.jsonp("#{this.url}/recieve",{params}).then(( res )->
         return root.disconnect( true ) if "error" of res.data
         root.failures = 0
         for event in res.data
@@ -109,34 +108,36 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
 )  
 
 
+
 #user main file
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
-  base = 'jieq1u3u19.elb7.stacklab.org:80'
+  base = 'http://<%=config.host%>:<%=config.port%>'
   $user = {};
   
-  get_user_info = ()->
-    return $http.jsonp( base+"/oauth/user_info?callback=JSON_CALLBACK")
+  get_user_info = ( oauth_id )->
+    return $http.jsonp( "#{base}/oauth/user_info?callback=JSON_CALLBACK&oauth_id=#{oauth_id}")
   
   user_login = ()->
     q = $q.defer();
     oauth_id = null
-    $http.jsonp(base+'/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
+    $http.jsonp("#{base}/oauth/apply_oauth_id?callback=JSON_CALLBACK").success( (data) ->
       oauth_id = data.oauth_id
       console.log oauth_id
       
       url = 'https://api.weibo.com/oauth2/authorize'
-      param = ['?client_id=3312201828',
-        'redirect_uri=jieq1u3u19.elb7.stacklab.org/oauth/callback',
+      param = ['?client_id=<%= config.weibo.appkey%>',
+        'redirect_uri=<%= config.host%>/oauth/callback',
         'state=weibo:'+oauth_id].join('&')
       
       window.open url+param 
       
-      interval_limit = 50
+      interval_limit = 100
       interval = $window.setInterval( ()->
         if !interval_limit
           $window.clearInterval( interval ) 
           return q.reject()
-        get_user_info().then((user)->
+        get_user_info( oauth_id ).then((user)->
+          $window.clearInterval( interval ) 
           q.resolve(user)
         ,()->
           interval_limit--
@@ -155,6 +156,7 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       $user.user = user;
       q.resolve( user )
     ).error(()->
+      console.log 'get_user_info failed'
       user_login().then( ( user )->
         $user.user = user
         q.resolve( user )
@@ -220,21 +222,24 @@ angular.module('openchat.service').service('$page_feature',()->
 
 
 #file:events.coffee     
-angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
+angular.module('openchat').controller('basic', ( $scope, $connect, $user, $page_feature ) ->
   $scope.current_user = {};
   $scope.message = {};
   $scope.recieve_messages = []
   
   $scope.connect = () ->
     return if $connect.connected
+    if( $page_feature.get_current() )
+      
+    
     if $user.get_current()?.name?
       console.log( $user.get_current(),"already connected once, this is second")
-      $connect = $connect.connect();
+      $connect.connect();
     else
       console.log( $scope.current_user,"this is first connect")
-      $user.user_detect().then( (user)->
+      $user.user_detect().then( ( user )->
         $scope.current_user = user;
-        $connect = $connect.connect();
+        $connect.connect();
       )
       
   $scope.disconnect = () ->
@@ -260,18 +265,25 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
 #file:events.coffee     
 angular.module('openchat').controller('private_chat', ( $scope, $connect, $user, $chat ) ->
   $scope.current_user = {};
-  $scope.conversations = {}
+  $scope.conversations = {};
+  $scope.current_conversation = {};
+  $scope.chat_window_status = {mode:'full'}
       
   conversation_init = ( user )->
     if not $scope.conversations[ user.openchatId]? 
-      $scope.conversations[user.openchatId] = angular.copy user 
-      $scope.conversations[user.openchatId].messages = []
+      conversation = angular.extend({}, angular.copy(user), {messages:[]}) 
+      $scope.conversations[user.openchatId] = conversation 
+      $scope.current_conversation = conversation
+    else
+      $scope.current_conversation = angular.copy $scope.conversations[user.openchatId]
     
   conversation_push = ( message, target )->
     target ?= message.source
     if not $scope.conversations[ target.openchatId]? 
       conversation_init( target )
-    $scope.conversations[ target.openchatId].messages.push( message )    
+    $scope.conversations[ target.openchatId].messages.push( message )  
+    $scope.current_conversation = angular.copy $scope.conversations[ target.openchatId]
+    console.log $scope.current_conversation
     
   $connect.on 'connect', () ->
     $scope.current_user = $user.get_current()
@@ -283,11 +295,10 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
   bind_events = ( $connect )->
     $connect.on "update_users", (users) -> 
       $scope.users = users 
-      console.log( $scope.users );
+      console.log( "update_users", $scope.users );
       
     $connect.on 'disconnect', () ->
       $scope.recieve_message ={source:'server',message:'disconnect'};
-      $scope.$digest();
 
     $connect.on 'get_message', ( message ) ->
       conversation_push( message ) if message ;
@@ -295,13 +306,25 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
   $scope.send_message = ( message, user )->
     if not message 
       return alert('can not send empty message')
+      
     if user
       $chat.set_target( user )
-    console.log( message, user );
+    else
+      $chat.set_target( $scope.current_conversation )
     $chat.set_message( message ).send();
-    
+    console.log('sending message', message, user )
     target = $chat.get_target();
     conversation_push( {source:$scope.current_user,message:message}, target )
+    
+  $scope.set_current_conversation = ( conversation ) ->
+    $scope.current_conversation = angular.copy( conversation )
+    console.log('set current conversation', conversation )
+    
+  $scope.object_length = ( object ) ->
+    length = 0
+    ++length for i of object
+    console.log( "object_length", length )
+    return length
   
   return;
 )
@@ -324,14 +347,13 @@ angular.module('openchat').controller('user_list', ( $scope, $connect, $user, $c
   $connect.on 'connect', () ->
     console.log( 'controller-user_list bind events' )
     $scope.current_user = $user.get_current()
-    console.log( $connect.times )
     bind_events( $connect ) if $connect.times == 1
   
   
   bind_events = ( $connect )->
     $connect.on "update_users", (users) -> 
       $scope.users = users ;
-      console.log( $scope.users );
+      console.log "update_users", users
       
   $scope.set_target = ( user )->
     $chat.set_target( user )
@@ -340,7 +362,6 @@ angular.module('openchat').controller('user_list', ( $scope, $connect, $user, $c
       
   return;
 )
-
 
 
 

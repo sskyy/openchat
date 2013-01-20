@@ -18,7 +18,7 @@ var options = {
 module.exports = function(){
     weiboOauth =  new oauth( options );
     weiboOauth.gen_user_session = function( user, access_token ){
-        return { name : user.name, id: user.id, access_token : access_token }
+        return { name : user.name, id: user.id, access_token : access_token, avatar:user.profile_image_url }
     }
     return weiboOauth
 }

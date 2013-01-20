@@ -26,9 +26,6 @@ oauth.prototype.get_access_token = function( httpsOptions, code, callback ){
         }
         
     var req = https.request(httpsOptions, function(res) {
-        console.log("statusCode: ", res.statusCode);
-        console.log("headers: ", res.headers);
-
         res.on('data', function( buf) {
             var data = JSON.parse( buf.toString() );
             data.platform = root.options.platform 
@@ -61,7 +58,7 @@ oauth.prototype.get_user_info = function( access_token, id, httpsOptions, callba
 
         res.on('data', function( buf) {
             var res = JSON.parse( buf.toString() );
-            console.log('get_user_info_done', res )
+            console.log('get_user_info_done' )
             callback( res );
         });
     });

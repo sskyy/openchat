@@ -5,7 +5,3 @@ angular.module('openchat', ['openchat.service'])
 
 
 
-
-
-
-

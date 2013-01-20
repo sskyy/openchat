@@ -49,12 +49,16 @@ exports.listen = ( server ) ->
 ###
           
 ### using ajax ###
+###
+  Need oauth.js to generate user session first, need req.session.user.openchatId 
+  to identify user.
+  Need page.js to locate user page.
+###
 _ = require 'underscore'
 users = {}
+user_page_ref = {}
 chat = 
   connect : ( req, res) ->
-    #emulator
-#    req.session.user = {id:'jason@weibo.com'}
     root = this
     if !req.session.user
       return res.jsonp(501,{message:'login first.'}) 

@@ -20,7 +20,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   $connect = 
     _events : {},
     _connectId : null
-    url:'<%=config.host%>:<%=config.port%>/chat',
+    url:'http://<%=config.host%>:<%=config.port%>/chat',
     interval : 1000,
     heartbeat : null,
     connected : false,
@@ -29,10 +29,10 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
     times : 0,
     connect : ()->
       root = this
-      console.log root.connected
+      console.log "is connected?", root.connected
       return this if root.connected
       params = {callback:'JSON_CALLBACK'}
-      $http.jsonp( this.url+'/connect',{params}).success(( res )->
+      $http.jsonp( "#{this.url}/connect",{params}).success(( res )->
         root.heartbeat = $window.setInterval(()->
           root._recieve()
         ,root.interval)
@@ -48,13 +48,13 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root = this
       $window.clearInterval( this.heartbeat )
       root.connected = false
-      $http.jsonp(this.url+'/emit',{params:{connectId:root.connectId,'event':'disconnect'}}) unless silent
+      $http.jsonp("#{this.url}/emit",{params:{connectId:root.connectId,'event':'disconnect'}}) unless silent
       
     emit: ( event, data)->
       return false if not this.connected 
       root = this
       params = {event, data, connectId:root.connectId,callback:'JSON_CALLBACK'}
-      $http.jsonp(this.url+'/emit',{params})
+      $http.jsonp("#{this.url}/emit",{params})
       
     on: ( event, callback, context ) ->
       root = this
@@ -67,7 +67,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       this.disconnect() if this.failures > this.failuresLimit
       root = this;
       params = {callback:'JSON_CALLBACK',connectId:root.connectId, t:Date.parse(new Date())}
-      $http.jsonp(this.url+'/recieve',{params}).then(( res )->
+      $http.jsonp("#{this.url}/recieve",{params}).then(( res )->
         return root.disconnect( true ) if "error" of res.data
         root.failures = 0
         for event in res.data
@@ -94,3 +94,4 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   return $connect;
   
 )  
+

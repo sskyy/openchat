@@ -116,7 +116,8 @@ chat = {
         user = users[openchatId];
         _results.push({
           name: user.name,
-          openchatId: user.openchatId
+          openchatId: user.openchatId,
+          avatar:user.avatar
         });
       }
       return _results;

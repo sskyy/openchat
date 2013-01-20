@@ -6,36 +6,26 @@ module.exports = function(grunt) {
     
     // Project configuration.
     grunt.initConfig({
-//        concat:{
-//            openchat :{
-//                src : ['src/client/connect.coffee',
-//                'src/client/user.coffee',
-//                'src/client/page_feature.coffee',
-//                'src/client/events.coffee',
-//                ],
-//                dest : 'build/client/openchat.coffee'
-//            }
-//        },
         watch: {
-            src : {
-                files : ['src/client/*.coffee','src/client/*.html','src/config.js'],
-                tasks : ['build-openchat']
-            },
+//            src : {
+//                files : ['src/client/*.coffee','src/client/*.html','src/config.js'],
+//                tasks : ['build-openchat']
+//            },
             github : {
                 files : ['src/grunt/github.message'],
                 tasks : ['github-commit:push']
             },
             all_in_one : {
-                files : ['src/client/initialize.js','src/client/openchat-all.js'],
+                files : ['src/client/*','src/server/*','src/grunt/config.js','src/grunt/config_local.js'],
                 tasks : ['build-openchat-all']
-            }
-        },
-        coffee : {
-            compile:{
-                files:{
-                    './build/client/openchat.js':['./build/client/openchat.coffee'],
-                    './build/client/openchat_local.js':['./build/client/openchat_local.coffee']
-                }
+            },
+            css : {
+                files : ['src/client/css/openchat.less'],
+                tasks : ['less']
+            },
+            template : {
+                files : ['src/client/openchat.tpl.html'],
+                tasks : ['build-template']
             }
         },
         jsdoc : {
@@ -43,11 +33,22 @@ module.exports = function(grunt) {
                 src: ['src/*.js', 'test/*.js'], 
                 dest: 'doc'
             }
+        },
+        less: {
+            development: {
+//                options: {
+//                    paths: ["assets/css"]
+//                },
+                files: {
+                    "build/client/css/openchat.css": "src/client/css/openchat.less"
+                }
+            }
         }
     });
     
     grunt.loadTasks('./src/grunt/tasks');
     grunt.loadNpmTasks("grunt-contrib-coffee");
+    grunt.loadNpmTasks("grunt-contrib-less");
     grunt.loadNpmTasks("grunt-include");
     
 };

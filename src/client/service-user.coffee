@@ -1,16 +1,16 @@
 
 #user main file
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
-  base = '<%=config.host%>:<%=config.port%>'
+  base = 'http://<%=config.host%>:<%=config.port%>'
   $user = {};
   
-  get_user_info = ()->
-    return $http.jsonp( base+"/oauth/user_info?callback=JSON_CALLBACK")
+  get_user_info = ( oauth_id )->
+    return $http.jsonp( "#{base}/oauth/user_info?callback=JSON_CALLBACK&oauth_id=#{oauth_id}")
   
   user_login = ()->
     q = $q.defer();
     oauth_id = null
-    $http.jsonp(base+'/oauth/apply_oauth_id?callback=JSON_CALLBACK').success( (data) ->
+    $http.jsonp("#{base}/oauth/apply_oauth_id?callback=JSON_CALLBACK").success( (data) ->
       oauth_id = data.oauth_id
       console.log oauth_id
       
@@ -21,12 +21,13 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       
       window.open url+param 
       
-      interval_limit = 50
+      interval_limit = 100
       interval = $window.setInterval( ()->
         if !interval_limit
           $window.clearInterval( interval ) 
           return q.reject()
-        get_user_info().then((user)->
+        get_user_info( oauth_id ).then((user)->
+          $window.clearInterval( interval ) 
           q.resolve(user)
         ,()->
           interval_limit--
@@ -45,6 +46,7 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       $user.user = user;
       q.resolve( user )
     ).error(()->
+      console.log 'get_user_info failed'
       user_login().then( ( user )->
         $user.user = user
         q.resolve( user )

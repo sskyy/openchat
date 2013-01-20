@@ -11,6 +11,7 @@ exports.listen = function( server ){
 function listen_server( server, io ){
     server.get('/oauth/apply_oauth_id', function( req, res ){
         var id = generate_id();
+        console.log( 'replying oauth_id', id)
         res.jsonp({
             oauth_id:id
         })
@@ -22,7 +23,7 @@ function listen_server( server, io ){
                 message:"no code or oauth_id"
             })
         }
-        var state = req.query.state.split(":");
+        var state = req.query.state.split(":")
         var oauth_id = state[1];
         var platform = state[0]
         
@@ -33,11 +34,13 @@ function listen_server( server, io ){
         }
         
         var platformIns = require('./oauth-'+platform + '.js')();
+        console.log('begin to get access_token for',oauth_id)
         platformIns.get_access_token(null, req.query.code,  function( access_token_pack ){
             platformIns.get_user_info( access_token_pack.access_token
                 ,access_token_pack[platformIns.options.idField]
                 ,null
                 ,function( user ){
+                    console.log("get user done, begin to gen session");
                     users[oauth_id] = platformIns.gen_user_session( user, access_token_pack.access_token )
                     users[oauth_id].openchatId = users[oauth_id].id + '@' + platform
             })
@@ -48,6 +51,7 @@ function listen_server( server, io ){
     
     server.get('/oauth/user_info', function(req, res){
         if( server.DEBUG_MODE ){
+            console.log('DEBUG_MODE generate randome_user')
             req.session.user = generate_randome_user()
         }
         
@@ -84,7 +88,8 @@ function generate_randome_user(){
         name : name,
         id : id,
         openchatId : id + '@' + platform,
-        platform : platform
+        platform : platform,
+        avatar : 'http://tp4.sinaimg.cn/1991303247/50/5605406617/1'
     }
 }
 
