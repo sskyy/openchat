@@ -55,38 +55,54 @@ exports.listen = ( server ) ->
   Need page.js to locate user page.
 ###
 _ = require 'underscore'
+Page = require './page.js'
+
 users = {}
 user_page_ref = {}
 chat = 
   connect : ( req, res) ->
     root = this
+    if !req.session.page
+      Page.set_session( req )
+      
     if !req.session.user
       return res.jsonp(501,{message:'login first.'}) 
-      
-    users[req.session.user.openchatId] ?= _.extend({
-      events : 
-        [{event:'get_message', data:{source:{platform:'openchat',name:'server'},message:'welcome'}}]
-      connectId:null
-      lastLogin:null
-    },req.session.user)
-      
+    
+    root._keep_user req
+    root._connect_events( req.session.user.openchatId )
+    console.log( req.session.user.openchatId , "logged in ")
+    return res.jsonp(200,{ message:'hello',connectId} )
+  
+  _keep_user : ( req )->
+    users[req.session.user.openchatId] ?= _.extend({events : []},req.session.user)
     connectId = req.query.connectId? || root._generate_id()
     users[req.session.user.openchatId].connectId = connectId
     users[req.session.user.openchatId].lastLogin = root._now()
-    console.log( req.session.user.openchatId , "logged in ")
-    root._connect_events( req.session.user.openchatId )
-    return res.jsonp(200,{ message:'hello',connectId} )
-  
+    
   _connect_events : ( connectUser )->
-    this._notify_all_user('update_users', this._output_all_users())
+    #update user_page_ref
+    user_page_ref[ req.session.page.id ] ?= {}
+    user_page_ref[ req.session.page.id ][req.session.user.openchatId] = users[req.session.user.openchatId]
+    # notify same page users
+#    this._notify_all_user('update_users', this._output_all_users())
+    this._notify_page_user('update_users', this._output_page_users( req.session.page.id ), req.session.page.id )
     
   _notify_all_user : ( event, data )->
     for openchatId, user of users
       user.events.push({event,data})
       
+  _notify_page_user : ( event, data, pageId )->
+    for openchatId, user of user_page_ref[pageId]
+      user.events.push({event,data})
+      
   _output_all_users:()->
     output = (for openchatId, user of users
-      {name:user.name,openchatId:user.openchatId})
+      {name:user.name,openchatId:user.openchatId,avatar:user.avatar})
+    return output
+    
+  _output_page_users:( pageId )->
+    output = (for openchatId, user of user_page_ref[pageId]
+      {name:user.name,openchatId:user.openchatId,avatar:user.avatar})
     return output
     
   emit : ( req, res )->
@@ -119,8 +135,15 @@ chat =
     if( parseInt(req.query.connectId) == users[ req.session.user.openchatId ].connectId )
       console.log( req.session.user.openchatId ," logged out")
       delete users[ req.session.user.openchatId ]
-      this._notify_all_user('update_users', this._output_all_users())
-  
+      this._disconnect_event( req );
+      
+  _disconnect_event : (req ) ->
+    #update user_page_ref
+    delete users_page_ref[ req.session.page.id ][req.session.user.openchatId]
+    #notify same page user
+#    this._notify_all_user('update_users', this._output_all_users())
+    this._notify_page_user('update_users', this._output_page_users( req.session.page.id ), req.session.page.id )
+    
   _generate_id : ( collection ) ->
     return this._now()
     

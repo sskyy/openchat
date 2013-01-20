@@ -1,13 +1,11 @@
 
 #file:events.coffee     
-angular.module('openchat').controller('basic', ( $scope, $connect, $user, $page_feature ) ->
+angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.current_user = {};
   $scope.message = {};
   $scope.recieve_messages = []
   
-  $scope.connect = () ->
-    return if $connect.connected
-    
+  _connect = () ->
     if $user.get_current()?.name?
       console.log( $user.get_current(),"already connected once, this is second")
       $connect.connect();
@@ -17,6 +15,11 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user, $page_
         $scope.current_user = user;
         $connect.connect();
       )
+  
+  $scope.connect = () ->
+    return if $connect.connected
+    _connect()
+
       
   $scope.disconnect = () ->
     $connect.disconnect();
