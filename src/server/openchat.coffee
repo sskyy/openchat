@@ -69,20 +69,21 @@ chat =
       return res.jsonp(501,{message:'login first.'}) 
     
     root._keep_user req
-    root._connect_events( req.session.user.openchatId )
+    root._connect_events req 
     console.log( req.session.user.openchatId , "logged in ")
     return res.jsonp(200,{ message:'hello',connectId} )
   
   _keep_user : ( req )->
+    root = this;
     users[req.session.user.openchatId] ?= _.extend({events : []},req.session.user)
     connectId = req.query.connectId? || root._generate_id()
     users[req.session.user.openchatId].connectId = connectId
     users[req.session.user.openchatId].lastLogin = root._now()
     
-  _connect_events : ( connectUser )->
+  _connect_events : ( req )->
     #update user_page_ref
-    user_page_ref[ req.session.page.id ] ?= {}
-    user_page_ref[ req.session.page.id ][req.session.user.openchatId] = users[req.session.user.openchatId]
+    user_page_ref[ req.session.page?.id ] ?= {}
+    user_page_ref[ req.session.page?.id ][req.session.user.openchatId] = users[req.session.user.openchatId]
     # notify same page users
 #    this._notify_all_user('update_users', this._output_all_users())
     this._notify_page_user('update_users', this._output_page_users( req.session.page.id ), req.session.page.id )
