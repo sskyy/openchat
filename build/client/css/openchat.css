@@ -615,7 +615,14 @@ body {
   padding: 10px;
   font-size: 14px;
   margin-bottom: 10px;
+  line-height: 200%;
   box-shadow: 0 0 0 0px rgba(150, 150, 150, 0.1), 0 1px 3px rgba(25, 25, 25, 0.3), 0 10px 15px rgba(200, 200, 200, 0.1) inset;
+}
+#openchat #chat_window_container #chat_window_shortcut .user_shortcut.active {
+  background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
+  color: #fff;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  font-weight: bold;
 }
 #openchat #chat_window_container #chat_window {
   float: right;

@@ -17,7 +17,7 @@
         </div>
         <div ng-controller="private_chat"  id="chat_window_container">
             <div id="chat_window_shortcut" ng-show="chat_window_status.mode=='shortcut'">
-                <span class="user_shortcut" ng-repeat="user in conversations" ng-click="chat_window_status.mode='full'">{{user.name}}</span>
+                <span class="user_shortcut" ng-class="user.unread&&'active'"  ng-repeat="user in conversations" ng-click="user.unread=false;chat_window_status.mode='full'">{{user.name}}</span>
             </div>
             
             <div id="chat_window" ng-show="chat_window_status.mode=='full'">

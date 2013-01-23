@@ -20,6 +20,7 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
     if not $scope.conversations[ target.openchatId]? 
       conversation_init( target )
     $scope.conversations[ target.openchatId].messages.push( message )  
+    $scope.conversations[ target.openchatId].unread = true  
     $scope.current_conversation = angular.copy $scope.conversations[ target.openchatId]
     console.log $scope.current_conversation
     

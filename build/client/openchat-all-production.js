@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1358942107000';
+  window._OPENCHAT_BUILD = '1358958148000';
 
   angular.module('openchat.service', []);
 
@@ -509,6 +509,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         conversation_init(target);
       }
       $scope.conversations[target.openchatId].messages.push(message);
+      $scope.conversations[target.openchatId].unread = true;
       $scope.current_conversation = angular.copy($scope.conversations[target.openchatId]);
       return console.log($scope.current_conversation);
     };
