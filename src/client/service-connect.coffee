@@ -31,7 +31,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root = this
       console.log "is connected?", root.connected
       return this if root.connected
-      params = {callback:'JSON_CALLBACK'}
+      params = {callback:'JSON_CALLBACK',url:$window.location.href}
       $http.jsonp( "#{this.url}/connect",{params}).success(( res )->
         root.heartbeat = $window.setInterval(()->
           root._recieve()

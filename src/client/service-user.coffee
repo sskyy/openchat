@@ -60,3 +60,5 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
     
   return $user;
 )
+
+

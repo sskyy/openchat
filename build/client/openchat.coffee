@@ -43,7 +43,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root = this
       console.log "is connected?", root.connected
       return this if root.connected
-      params = {callback:'JSON_CALLBACK'}
+      params = {callback:'JSON_CALLBACK',url:$window.location.href}
       $http.jsonp( "#{this.url}/connect",{params}).success(( res )->
         root.heartbeat = $window.setInterval(()->
           root._recieve()
@@ -172,6 +172,8 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
 )
 
 
+
+
 #detect page 
 angular.module('openchat.service').service('$chat',()->
   $chat =
@@ -213,25 +215,13 @@ angular.module('openchat.service').service('$chat',()->
 
 
 
-#detect page 
-angular.module('openchat.service').service('$page_feature',()->
-  $page_feature = {};
-  return $page_feature;
-)
-
-
-
 #file:events.coffee     
-angular.module('openchat').controller('basic', ( $scope, $connect, $user, $page_feature ) ->
+angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.current_user = {};
   $scope.message = {};
   $scope.recieve_messages = []
   
-  $scope.connect = () ->
-    return if $connect.connected
-    if( $page_feature.get_current() )
-      
-    
+  _connect = () ->
     if $user.get_current()?.name?
       console.log( $user.get_current(),"already connected once, this is second")
       $connect.connect();
@@ -241,6 +231,11 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user, $page_
         $scope.current_user = user;
         $connect.connect();
       )
+  
+  $scope.connect = () ->
+    return if $connect.connected
+    _connect()
+
       
   $scope.disconnect = () ->
     $connect.disconnect();

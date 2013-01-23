@@ -50,7 +50,7 @@ function listen_server( server, io ){
     })
     
     server.get('/oauth/user_info', function(req, res){
-        if( server.DEBUG_MODE ){
+        if( server.DEBUG_MODE && !req.session.user ){
             console.log('DEBUG_MODE generate randome_user')
             req.session.user = generate_randome_user()
         }

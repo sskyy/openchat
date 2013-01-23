@@ -1,53 +1,3 @@
-#openchat events
-
-### using socket.io 
-
-io = require 'socket.io'
-
-data = 
-  users : {}
-  connections : {}
-  
-single_socket_event = ( socket, data, io ) ->
-  socket.on 'set_current_user', ( user ) ->
-    socket.set 'user', user;
-    if user.name of data.connections
-      console.log 'kick out previous user', user.name;
-#      data.connections[user.name].emit('user_conflict');
-      data.connections[user.name].disconnect();
-      data.connections[user.name] = null;
-    data.users[user.name] = user;
-    data.connections[user.name] = socket;
-    
-    io.of('/chat').emit "update_users", data.users;
-    
-  socket.on 'disconnect',  () -> 
-    socket.get('user', ( err, user ) ->
-      if user && user.name of data.connections
-        if data.connections[user.name] == socket
-          delete data.connections[user.name]
-        if( (user.name of data.users) && !(user.name of data.connections) )
-          delete data.users[user.name];
-
-        io.of('/chat').emit 'update_users', data.users;  
-    );
-    
-  socket.on 'send_message', ( message ) ->
-    if message.target of data.connections
-      socket.get('user', (err, user)->
-        data.connections[message.target].emit( 'get_message', {source:user.name, message:message.message})
-      )
-    
-    
-exports.listen = ( server ) ->
-  reIO = io.listen(server)
-  reIO.of('/chat').on( 'connection', ( socket ) -> 
-    single_socket_event( socket, data, io )
-  )
-  return reIO
-  
-###
-          
 ### using ajax ###
 ###
   Need oauth.js to generate user session first, need req.session.user.openchatId 
@@ -56,36 +6,35 @@ exports.listen = ( server ) ->
 ###
 _ = require 'underscore'
 Page = require './page.js'
+async = require 'async'
 
 users = {}
 user_page_ref = {}
 chat = 
   connect : ( req, res) ->
     root = this
-    if !req.session.page
-      Page.set_session( req )
-      
-    if !req.session.user
-      return res.jsonp(501,{message:'login first.'}) 
+    return res.jsonp(501,{message:'login first.'}) if !req.session.user
+    Page.set_session( req ,() -> 
+      connectId = root._keep_user req
+      root._connect_events req 
+      console.log(  "user #{connectId} connected");
+      res.jsonp(200,{ message:'hello', connectId:connectId} )
+    )
     
-    root._keep_user req
-    root._connect_events req 
-    console.log( req.session.user.openchatId , "logged in ")
-    return res.jsonp(200,{ message:'hello',connectId} )
-  
   _keep_user : ( req )->
     root = this;
     users[req.session.user.openchatId] ?= _.extend({events : []},req.session.user)
     connectId = req.query.connectId? || root._generate_id()
     users[req.session.user.openchatId].connectId = connectId
     users[req.session.user.openchatId].lastLogin = root._now()
+    return connectId
     
   _connect_events : ( req )->
     #update user_page_ref
-    user_page_ref[ req.session.page?.id ] ?= {}
-    user_page_ref[ req.session.page?.id ][req.session.user.openchatId] = users[req.session.user.openchatId]
+    user_page_ref[ req.session.page.id ] ?= {}
+    user_page_ref[ req.session.page.id ][req.session.user.openchatId] = users[req.session.user.openchatId]
+    console.log 'notify_page_user', req.session.page.id , user_page_ref[req.session.page.id ].length
     # notify same page users
-#    this._notify_all_user('update_users', this._output_all_users())
     this._notify_page_user('update_users', this._output_page_users( req.session.page.id ), req.session.page.id )
     
   _notify_all_user : ( event, data )->
@@ -150,6 +99,19 @@ chat =
     
   _now : ()->
     return Date.parse( new Date)
+  
+  _callbacks : {}
+  
+  on : ( event, callback, context ) ->
+    @_callback[event] ?= []
+    context ?= callback
+    @_callback[event].push({callback,context})
+  
+  fire : (event,data)->
+    if @_callback[event]?
+      for callback in event 
+        callback.callback.call( callback.context, data )
+    
 
 
 exports.listen = ( server ) ->
@@ -160,5 +122,3 @@ exports.listen = ( server ) ->
     
     return chat[req.route.params.event]( req, res )
   )
-
-

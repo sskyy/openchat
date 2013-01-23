@@ -44,7 +44,8 @@ module.exports = function( grunt ){
                 
                 var buildFns = [];
                 var build = Date.parse( new Date())
-                grunt.utils._.each( globalConfig,function(  config, type){
+                grunt.utils._.each( globalConfig,function(config, type){
+                    console.log( config );
                     buildFns.push( function( counter ){
                         grunt.file.write( 'build/client/openchat-'+type+'.coffee',
                             grunt.template.process( coffeeFile, {_openchat_build:build, config:config}) )
@@ -53,7 +54,6 @@ module.exports = function( grunt ){
                     })
                 });
                 async.parallel( buildFns, function(){
-                    
                     var httpOptions = {
                             host : globalConfig.developement.host,
                             path : '/build_spy/set_build?build='+build,
@@ -63,14 +63,14 @@ module.exports = function( grunt ){
                                 'Content-Length': 0
                             }
                         }
-                        console.log( httpOptions)
+                        console.log("sending build to",globalConfig.developement.host, build);
                     var http = require("http")
-                    var req = http.request(httpOptions, function(res) {});
+                    var req = http.request(httpOptions, function(res) {
+                    });
                     req.end();
                     req.on('error', function(e) {
                         console.error(e);
                     });
-                    
                     callback&&callback( err );
                 });
         });

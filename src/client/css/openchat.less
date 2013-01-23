@@ -10,6 +10,8 @@
 
 @import "less/buttons.less";
 
+html,body{height:100%}
+
 #openchat{
     #user_list_container{
         position : fixed;
@@ -36,6 +38,10 @@
             width : 290px;
         }
         #chat_window_shortcut{
+            float : right;
+            position : relative;
+            margin-right : 70px;
+            cursor:pointer;
             .user_shortcut{
                 padding:10px;
                 font-size:14px;
@@ -46,7 +52,7 @@
         #chat_window{
             float : right;
             position : relative;
-            margin-right : 50px;
+            margin-right : 70px;
             padding : 10px;
             border : 1px #ddd solid;
             box-shadow: 0 0 0 0px rgba(150, 150, 150, 0.1), 0 1px 3px rgba(25, 25, 25, 0.3), 0 10px 15px rgba(200, 200, 200, 0.1) inset;
@@ -116,4 +122,22 @@
             }
         }
     }
+    #user_list_container{
+        height : 100%;
+        #user_list{
+            font-size:12px;
+            text-align:center;
+            padding:10px 0;
+            border-left:1px #eee solid;
+            height : 100%;
+            .user_list_avatar_small{
+                padding:8px 8px 2px 8px;
+                img{
+                    width:40px;
+                    height:40px;
+                }
+            }
+        }
+    }
+
 }

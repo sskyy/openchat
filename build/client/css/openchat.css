@@ -581,6 +581,10 @@ input[type="submit"].btn.btn-mini {
   color: #333333;
   text-decoration: none;
 }
+html,
+body {
+  height: 100%;
+}
 #openchat #user_list_container {
   position: fixed;
   top: 0px;
@@ -601,6 +605,12 @@ input[type="submit"].btn.btn-mini {
   border-bottom: 1px solid #EAEAEA;
   width: 290px;
 }
+#openchat #chat_window_container #chat_window_shortcut {
+  float: right;
+  position: relative;
+  margin-right: 70px;
+  cursor: pointer;
+}
 #openchat #chat_window_container #chat_window_shortcut .user_shortcut {
   padding: 10px;
   font-size: 14px;
@@ -610,7 +620,7 @@ input[type="submit"].btn.btn-mini {
 #openchat #chat_window_container #chat_window {
   float: right;
   position: relative;
-  margin-right: 50px;
+  margin-right: 70px;
   padding: 10px;
   border: 1px #ddd solid;
   box-shadow: 0 0 0 0px rgba(150, 150, 150, 0.1), 0 1px 3px rgba(25, 25, 25, 0.3), 0 10px 15px rgba(200, 200, 200, 0.1) inset;
@@ -677,4 +687,21 @@ input[type="submit"].btn.btn-mini {
 #openchat #chat_window_container #chat_window #chat_window_main #chat_window_current_conversation .message.mine {
   background: #dff1f2;
   text-align: right;
+}
+#openchat #user_list_container {
+  height: 100%;
+}
+#openchat #user_list_container #user_list {
+  font-size: 12px;
+  text-align: center;
+  padding: 10px 0;
+  border-left: 1px #eee solid;
+  height: 100%;
+}
+#openchat #user_list_container #user_list .user_list_avatar_small {
+  padding: 8px 8px 2px 8px;
+}
+#openchat #user_list_container #user_list .user_list_avatar_small img {
+  width: 40px;
+  height: 40px;
 }

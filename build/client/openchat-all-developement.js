@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1358657924000';
+  window._OPENCHAT_BUILD = '1358942107000';
 
   angular.module('openchat.service', []);
 
@@ -190,7 +190,8 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
           return this;
         }
         params = {
-          callback: 'JSON_CALLBACK'
+          callback: 'JSON_CALLBACK',
+          url: $window.location.href
         };
         $http.jsonp("" + this.url + "/connect", {
           params: params
@@ -440,21 +441,13 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
     return $chat;
   });
 
-  angular.module('openchat.service').service('$page_feature', function() {
-    var $page_feature;
-    $page_feature = {};
-    return $page_feature;
-  });
-
-  angular.module('openchat').controller('basic', function($scope, $connect, $user, $page_feature) {
+  angular.module('openchat').controller('basic', function($scope, $connect, $user) {
+    var _connect;
     $scope.current_user = {};
     $scope.message = {};
     $scope.recieve_messages = [];
-    $scope.connect = function() {
+    _connect = function() {
       var _ref;
-      if ($connect.connected) {
-        return;
-      }
       if (((_ref = $user.get_current()) != null ? _ref.name : void 0) != null) {
         console.log($user.get_current(), "already connected once, this is second");
         return $connect.connect();
@@ -465,6 +458,12 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
           return $connect.connect();
         });
       }
+    };
+    $scope.connect = function() {
+      if ($connect.connected) {
+        return;
+      }
+      return _connect();
     };
     $scope.disconnect = function() {
       return $connect.disconnect();
