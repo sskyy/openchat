@@ -89,7 +89,7 @@ chat =
       
   _disconnect_event : (req ) ->
     #update user_page_ref
-    delete users_page_ref[ req.session.page.id ][req.session.user.openchatId]
+    delete user_page_ref[ req.session.page.id ][req.session.user.openchatId]
     #notify same page user
 #    this._notify_all_user('update_users', this._output_all_users())
     this._notify_page_user('update_users', this._output_page_users( req.session.page.id ), req.session.page.id )
