@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1358958148000';
+  window._OPENCHAT_BUILD = '1359084489000';
 
   angular.module('openchat.service', []);
 
@@ -465,6 +465,10 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
       }
       return _connect();
     };
+    $scope.has_connected = function() {
+      var _ref;
+      return ((_ref = $user.get_current()) != null ? _ref.name : void 0) != null;
+    };
     $scope.disconnect = function() {
       return $connect.disconnect();
     };
@@ -487,7 +491,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
     $scope.conversations = {};
     $scope.current_conversation = {};
     $scope.chat_window_status = {
-      mode: 'full'
+      mode: 'shortcut'
     };
     conversation_init = function(user) {
       var conversation;

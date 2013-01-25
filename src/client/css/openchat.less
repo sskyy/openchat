@@ -13,6 +13,38 @@
 html,body{height:100%}
 
 #openchat{
+    a.btn{
+        text-decoration:none;
+    }
+    #openchat_login{
+        z-index:9999;
+        position:fixed;
+        right:0px;
+        bottom:0px;
+        border-top:1px #eee solid;
+        border-left : 5px #eee solid;
+        padding:8px;
+        background:#fff;
+        &.openchat_connected{
+            border-left : 5px #D9EDF7 solid;
+        }
+        #openchat_current_user{
+            #openchat_current_user_avatar{
+                display:inline-block;
+                vertical-align:top;
+                margin-right:8px;
+            }   
+            #openchat_current_user_body{
+                display:inline-block;
+                #openchat_current_user_name{
+                    color:#333;
+                    font-size:12px;
+                    line-height:12px;
+                    margin-bottom:8px;
+                }
+            }  
+        }
+    }
     #user_list_container{
         position : fixed;
         top : 0px;
@@ -20,7 +52,6 @@ html,body{height:100%}
         #user_list{
 
         }
-
     }
 
     #chat_window_container{

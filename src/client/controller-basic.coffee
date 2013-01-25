@@ -19,6 +19,9 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.connect = () ->
     return if $connect.connected
     _connect()
+    
+  $scope.has_connected = () ->
+    return $user.get_current()?.name?
 
       
   $scope.disconnect = () ->

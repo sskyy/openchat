@@ -235,6 +235,9 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.connect = () ->
     return if $connect.connected
     _connect()
+    
+  $scope.has_connected = () ->
+    return $user.get_current()?.name?
 
       
   $scope.disconnect = () ->
@@ -262,7 +265,7 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
   $scope.current_user = {};
   $scope.conversations = {};
   $scope.current_conversation = {};
-  $scope.chat_window_status = {mode:'full'}
+  $scope.chat_window_status = {mode:'shortcut'}
       
   conversation_init = ( user )->
     if not $scope.conversations[ user.openchatId]? 
