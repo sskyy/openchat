@@ -31,7 +31,7 @@
                 <div>
                     <div id="chat_window_user_list" ng-show="object_length( conversations)>1">
                         <div class="chat_window_user_name" ng-show="current_conversation.name!=user.name" ng-repeat="user in conversations">
-                            <span ng-click="set_current_conversation(user)">{{ user.name }}</span>
+                            <span ng-click="set_current_conversation(user);chat_window_status.mode='full'">{{ user.name }}</span>
                         </div>
                     </div>
                     <div id="chat_window_main">

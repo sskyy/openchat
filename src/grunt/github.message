@@ -1,1 +1,3 @@
-Done. need test.
+fix bug:
+1. conversation shortcut margin-left error
+2. auto open conversation window when click user list
