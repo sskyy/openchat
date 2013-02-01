@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359694613000';
+  window._OPENCHAT_BUILD = '1359695759000';
 
   angular.module('openchat.service', []);
 
@@ -514,7 +514,7 @@
     return function(scope, element, attrs) {
       console.log('directive ngScreenHeight begin', document.body.clientHeight);
       element.css('height', "" + (document.body.clientHeight - 67) + "px");
-      return console.log(element);
+      return element.css('z-index', 9999);
     };
   });
 
