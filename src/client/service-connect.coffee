@@ -19,7 +19,7 @@
 angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   $connect = 
     _events : {},
-    _connectId : null
+    _connectId : null,
     url:'http://<%=config.host%>:<%=config.port%>/chat',
     interval : 1000,
     heartbeat : null,
@@ -29,7 +29,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
     times : 0,
     connect : ()->
       root = this
-      console.log "is connected?", root.connected
+      console.log "connect check, is connected?", root.connected
       return this if root.connected
       params = {callback:'JSON_CALLBACK',url:$window.location.href}
       $http.jsonp( "#{this.url}/connect",{params}).success(( res )->
@@ -48,7 +48,8 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
       root = this
       $window.clearInterval( this.heartbeat )
       root.connected = false
-      $http.jsonp("#{this.url}/emit",{params:{connectId:root.connectId,'event':'disconnect'}}) unless silent
+      root._call_callbacks('disconnect')
+      $http.jsonp("#{this.url}/emit",{params:{connectId:root.connectId,'event':'disconnect',callback:'JSON_CALLBACK'}}) unless silent
       
     emit: ( event, data)->
       return false if not this.connected 

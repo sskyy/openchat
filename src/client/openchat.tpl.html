@@ -2,13 +2,14 @@
     <div ng-controller="basic" >
         
         <div id="openchat_login"  ng-class="is_connected()&&'openchat_connected'">
-            <input type="button" class="btn btn-primary" ng-show="!is_connected()&&!has_connected()" ng-click="connect()" value="open openchat">
-            <div id="openchat_current_user" ng-show="is_connected()||has_connected()">
+            <input type="button" class="btn btn-primary" ng-show="(!is_connected()&&!has_connected())||!current_user.name" ng-click="login()" ng-class="user_detecting&&'disabled'" value="{{(user_detecting&&'logining')||'open openchat'}}">
+            <div id="openchat_current_user" ng-show="(is_connected()||has_connected())&&current_user.name">
                 <img id="openchat_current_user_avatar" src="{{current_user.avatar}}">
                 <div id="openchat_current_user_body">
                     <div id="openchat_current_user_name" >{{current_user.name}}@{{current_user.platform}}</div>
                     <div id="openchat_current_user_btn">
-                        <a ng-show="is_connected()" ng-click="disconnect()" class="btn">logout</a>
+                        <a ng-show="is_connected()" ng-click="disconnect()" class="btn">disconnect</a>
+                        <a ng-show="is_connected()" ng-click="logout()" class="btn btn-danger">logout</a>
                         <a ng-show="!is_connected()" ng-click="connect()" class="btn btn-primary">login</a>
                     </div>
                 </div>
@@ -17,7 +18,7 @@
         
         <div ng-controller="private_chat"  id="chat_window_container">
             <div id="chat_window_shortcut" ng-show="chat_window_status.mode=='shortcut'">
-                <span class="user_shortcut" ng-class="user.unread&&'active'"  ng-repeat="user in conversations" ng-click="user.unread=false;chat_window_status.mode='full'">{{user.name}}</span>
+                <span class="user_shortcut" ng-class="user.unread&&'active'"  ng-repeat="user in conversations" ng-click="set_current_conversation(user, true)">{{user.name}}</span>
             </div>
             
             <div id="chat_window" ng-show="chat_window_status.mode=='full'">
@@ -29,9 +30,12 @@
                     <span id="chat_window_close" ng-click="chat_window_status.mode='shortcut'">X</span>
                 </div>
                 <div>
+                    
                     <div id="chat_window_user_list" ng-show="object_length( conversations)>1">
-                        <div class="chat_window_user_name" ng-show="current_conversation.name!=user.name" ng-repeat="user in conversations">
-                            <span ng-click="set_current_conversation(user);chat_window_status.mode='full'">{{ user.name }}</span>
+                        <div ng-click="set_current_conversation(user, true)" class="chat_window_user_name" 
+                             ng-class="(user.disconnected&&'openchat_disconnected')||(user.unread&&'openchat_unread')" 
+                             ng-repeat="user in conversations">
+                            <span >{{ user.name }}</span>
                         </div>
                     </div>
                     <div id="chat_window_main">
@@ -51,7 +55,7 @@
         </div>
         <div ng-controller="user_list" ng-show="has_connected()" id="user_list_container">
             <div id="user_list">
-                <div class="user_list_user" ng-repeat="user in users" ng-click="set_target(user)">
+                <div class="user_list_user" ng-repeat="user in users" ng-click="set_target(user);chat_window_status.mode='full'">
                     <div class="user_list_avatar_small">
                         <img src="{{user.avatar}}">
                     </div>

@@ -17,9 +17,10 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       url = 'https://api.weibo.com/oauth2/authorize'
       param = ['?client_id=<%= config.weibo.appkey%>',
         'redirect_uri=<%= config.host%>/oauth/callback',
+        'forcelogin=true',
         'state=weibo:'+oauth_id].join('&')
       
-      window.open url+param 
+      window.open url+param, '', 'height=350,width=600'
       
       interval_limit = 100
       interval = $window.setInterval( ()->
@@ -47,16 +48,21 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       q.resolve( user )
     ).error(()->
       console.log 'get_user_info failed'
-      user_login().then( ( user )->
-        $user.user = user
-        q.resolve( user )
+      user_login().then( ( res )->
+        $user.user = res.data
+        q.resolve( res.data )
       )
     )
     return q.promise;
     
   $user.get_current = ()->
-    console.log( "current_user", $user.user? && $user.user || null )
     return $user.user? && $user.user || null 
+    
+  $user.logout = ()->
+    $http.jsonp("#{base}/oauth/end_session?callback=JSON_CALLBACK").success( (data) ->
+      $user.user = {};
+    )
+    
     
   return $user;
 )

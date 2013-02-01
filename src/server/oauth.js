@@ -55,7 +55,7 @@ function listen_server( server, io ){
             req.session.user = generate_randome_user()
         }
         
-        if( 'user' in req.session && 'openchatId' in req.session.user ){
+        if( 'user' in req.session && req.session.user && 'openchatId' in req.session.user ){
             return res.jsonp( req.session.user )
         }
         
@@ -66,9 +66,18 @@ function listen_server( server, io ){
             return delete users[req.query.oauth_id];
         }
         
-        return res.send(404,{ message:'user info not get yet'});
+        return res.jsonp(404,{ message:'user info not get yet'});
     })
     
+    
+    server.get('/oauth/end_session', function(req, res){
+        if( !server.DEBUG_MODE ){
+            var platformIns = require('./oauth-'+req.session.user.platform + '.js')();
+            platformIns.end_session( req.session.user );
+        }
+        req.session.user = null
+        return res.jsonp(200,{ message:'oauth session end.'});
+    })
 }
 
 

@@ -83,7 +83,7 @@ chat =
     
   disconnect : ( req, res)->
     if( parseInt(req.query.connectId) == users[ req.session.user.openchatId ].connectId )
-      console.log( req.session.user.openchatId ," logged out")
+      console.log( req.session.user.name, req.session.user.openchatId ," logged out")
       delete users[ req.session.user.openchatId ]
       this._disconnect_event( req );
       
@@ -91,11 +91,11 @@ chat =
     #update user_page_ref
     delete user_page_ref[ req.session.page.id ][req.session.user.openchatId]
     #notify same page user
-#    this._notify_all_user('update_users', this._output_all_users())
     this._notify_page_user('update_users', this._output_page_users( req.session.page.id ), req.session.page.id )
     
   _generate_id : ( collection ) ->
     return this._now()
+    
     
   _now : ()->
     return Date.parse( new Date)
@@ -111,6 +111,7 @@ chat =
     if @_callback[event]?
       for callback in event 
         callback.callback.call( callback.context, data )
+        
     
 
 

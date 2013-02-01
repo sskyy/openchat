@@ -11,33 +11,59 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
     if not $scope.conversations[ user.openchatId]? 
       conversation = angular.extend({}, angular.copy(user), {messages:[]}) 
       $scope.conversations[user.openchatId] = conversation 
-      $scope.current_conversation = conversation
-    else
-      $scope.current_conversation = angular.copy $scope.conversations[user.openchatId]
+    return $scope.conversations[user.openchatId]
     
   conversation_push = ( message, target )->
     target ?= message.source
     if not $scope.conversations[ target.openchatId]? 
       conversation_init( target )
     $scope.conversations[ target.openchatId].messages.push( message )  
-    $scope.conversations[ target.openchatId].unread = true  
-    $scope.current_conversation = angular.copy $scope.conversations[ target.openchatId]
-    console.log $scope.current_conversation
+    if( $scope.chat_window_status.mode == 'shortcut' || $scope.current_conversation.openchatId != target.openchatId )
+      $scope.conversations[ target.openchatId].unread = true  
+    
+  set_current_conversation = ( conversation, open_window ) ->
+    $scope.current_conversation = conversation
+    console.log( 'set current conversation', conversation )
+    if( open_window ) 
+      $scope.chat_window_status.mode = 'full'
+      conversation.unread = false
+    
+    console.log('set current conversation', conversation )
+    
+  in_array = ( needle, stack, id )->
+    isFound = false
+    for item in stack
+      target = (id?&&item[id])||item
+      if needle == target
+        isFound = true
+        break
+    isFound;
     
   $connect.on 'connect', () ->
     $scope.current_user = $user.get_current()
     console.log( 'controller-private_chat bind events, current user', $scope.current_user );
     $chat.set_connect( $connect );
-    $chat.on( "set_target", conversation_init );
+    $chat.on( "set_target", (user) -> 
+      conversation = conversation_init( user )
+      set_current_conversation( conversation, true )
+    );
     bind_events( $connect ) if $connect.times == 1
+  
   
   bind_events = ( $connect )->
     $connect.on "update_users", (users) -> 
       $scope.users = users 
+      for openchatId,user of $scope.conversations 
+        if( !in_array( openchatId, users, 'openchatId') )
+          console.log( 'found user', openchatId,'disconnect' )
+          user.disconnected = true
       console.log( "update_users", $scope.users );
       
     $connect.on 'disconnect', () ->
-      $scope.recieve_message ={source:'server',message:'disconnect'};
+      $scope.current_user = {};
+      $scope.conversations = {};
+      $scope.current_conversation = {};
+      $scope.chat_window_status = {mode:'shortcut'}
 
     $connect.on 'get_message', ( message ) ->
       conversation_push( message ) if message ;
@@ -55,14 +81,12 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
     target = $chat.get_target();
     conversation_push( {source:$scope.current_user,message:message}, target )
     
-  $scope.set_current_conversation = ( conversation ) ->
-    $scope.current_conversation = angular.copy( conversation )
-    console.log('set current conversation', conversation )
-    
+  $scope.set_current_conversation = set_current_conversation
+  
   $scope.object_length = ( object ) ->
     length = 0
     ++length for i of object
-    console.log( "object_length", length )
+#    console.log( "object_length", length )
     return length
   
   return;

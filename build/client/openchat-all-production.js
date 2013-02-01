@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359088902000';
+  window._OPENCHAT_BUILD = '1359105123000';
 
   angular.module('openchat.service', []);
 
@@ -185,7 +185,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
       connect: function() {
         var params, root;
         root = this;
-        console.log("is connected?", root.connected);
+        console.log("connect check, is connected?", root.connected);
         if (root.connected) {
           return this;
         }
@@ -213,11 +213,13 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         root = this;
         $window.clearInterval(this.heartbeat);
         root.connected = false;
+        root._call_callbacks('disconnect');
         if (!silent) {
           return $http.jsonp("" + this.url + "/emit", {
             params: {
               connectId: root.connectId,
-              'event': 'disconnect'
+              'event': 'disconnect',
+              callback: 'JSON_CALLBACK'
             }
           });
         }
@@ -327,8 +329,8 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         oauth_id = data.oauth_id;
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
-        param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org/oauth/callback', 'state=weibo:' + oauth_id].join('&');
-        window.open(url + param);
+        param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org/oauth/callback', 'forcelogin=true', 'state=weibo:' + oauth_id].join('&');
+        window.open(url + param, '', 'height=350,width=600');
         interval_limit = 100;
         return interval = $window.setInterval(function() {
           if (!interval_limit) {
@@ -356,16 +358,20 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         return q.resolve(user);
       }).error(function() {
         console.log('get_user_info failed');
-        return user_login().then(function(user) {
-          $user.user = user;
-          return q.resolve(user);
+        return user_login().then(function(res) {
+          $user.user = res.data;
+          return q.resolve(res.data);
         });
       });
       return q.promise;
     };
     $user.get_current = function() {
-      console.log("current_user", ($user.user != null) && $user.user || null);
       return ($user.user != null) && $user.user || null;
+    };
+    $user.logout = function() {
+      return $http.jsonp("" + base + "/oauth/end_session?callback=JSON_CALLBACK").success(function(data) {
+        return $user.user = {};
+      });
     };
     return $user;
   });
@@ -442,20 +448,31 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
   });
 
   angular.module('openchat').controller('basic', function($scope, $connect, $user) {
-    var _connect;
     $scope.current_user = {};
     $scope.message = {};
     $scope.recieve_messages = [];
-    _connect = function() {
+    $scope.user_detecting = false;
+    $scope.login = function(auto_connect) {
       var _ref;
+      if (auto_connect == null) {
+        auto_connect = true;
+      }
       if (((_ref = $user.get_current()) != null ? _ref.name : void 0) != null) {
-        console.log($user.get_current(), "already connected once, this is second");
-        return $connect.connect();
-      } else {
-        console.log($scope.current_user, "this is first connect");
-        return $user.user_detect().then(function(user) {
-          $scope.current_user = user;
+        console.log($user.get_current(), "already logged in, this is second");
+        if (auto_connect) {
           return $connect.connect();
+        }
+      } else {
+        console.log("this is first connect");
+        $scope.user_detecting = true;
+        return $user.user_detect().then(function(user) {
+          console.log("user detect done", user);
+          $scope.current_user = user;
+          $connect.connect();
+          return $scope.user_detecting = false;
+        }, function() {
+          alert('login faile, please try it later');
+          return $scope.user_detecting = false;
         });
       }
     };
@@ -463,7 +480,14 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
       if ($connect.connected) {
         return;
       }
-      return _connect();
+      return $connect.connect();
+    };
+    $scope.logout = function(auto_disconnect) {
+      if (auto_disconnect == null) {
+        auto_disconnect = true;
+      }
+      $scope.disconnect();
+      return $user.logout();
     };
     $scope.has_connected = function() {
       var _ref;
@@ -486,7 +510,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
   });
 
   angular.module('openchat').controller('private_chat', function($scope, $connect, $user, $chat) {
-    var bind_events, conversation_init, conversation_push;
+    var bind_events, conversation_init, conversation_push, in_array, set_current_conversation;
     $scope.current_user = {};
     $scope.conversations = {};
     $scope.current_conversation = {};
@@ -500,10 +524,8 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
           messages: []
         });
         $scope.conversations[user.openchatId] = conversation;
-        return $scope.current_conversation = conversation;
-      } else {
-        return $scope.current_conversation = angular.copy($scope.conversations[user.openchatId]);
       }
+      return $scope.conversations[user.openchatId];
     };
     conversation_push = function(message, target) {
       if (target == null) {
@@ -513,28 +535,65 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         conversation_init(target);
       }
       $scope.conversations[target.openchatId].messages.push(message);
-      $scope.conversations[target.openchatId].unread = true;
-      $scope.current_conversation = angular.copy($scope.conversations[target.openchatId]);
-      return console.log($scope.current_conversation);
+      if ($scope.chat_window_status.mode === 'shortcut' || $scope.current_conversation.openchatId !== target.openchatId) {
+        return $scope.conversations[target.openchatId].unread = true;
+      }
+    };
+    set_current_conversation = function(conversation, open_window) {
+      $scope.current_conversation = conversation;
+      console.log('set current conversation', conversation);
+      if (open_window) {
+        $scope.chat_window_status.mode = 'full';
+        conversation.unread = false;
+      }
+      return console.log('set current conversation', conversation);
+    };
+    in_array = function(needle, stack, id) {
+      var isFound, item, target, _i, _len;
+      isFound = false;
+      for (_i = 0, _len = stack.length; _i < _len; _i++) {
+        item = stack[_i];
+        target = ((id != null) && item[id]) || item;
+        if (needle === target) {
+          isFound = true;
+          break;
+        }
+      }
+      return isFound;
     };
     $connect.on('connect', function() {
       $scope.current_user = $user.get_current();
       console.log('controller-private_chat bind events, current user', $scope.current_user);
       $chat.set_connect($connect);
-      $chat.on("set_target", conversation_init);
+      $chat.on("set_target", function(user) {
+        var conversation;
+        conversation = conversation_init(user);
+        return set_current_conversation(conversation, true);
+      });
       if ($connect.times === 1) {
         return bind_events($connect);
       }
     });
     bind_events = function($connect) {
       $connect.on("update_users", function(users) {
+        var openchatId, user, _ref;
         $scope.users = users;
+        _ref = $scope.conversations;
+        for (openchatId in _ref) {
+          user = _ref[openchatId];
+          if (!in_array(openchatId, users, 'openchatId')) {
+            console.log('found user', openchatId, 'disconnect');
+            user.disconnected = true;
+          }
+        }
         return console.log("update_users", $scope.users);
       });
       $connect.on('disconnect', function() {
-        return $scope.recieve_message = {
-          source: 'server',
-          message: 'disconnect'
+        $scope.current_user = {};
+        $scope.conversations = {};
+        $scope.current_conversation = {};
+        return $scope.chat_window_status = {
+          mode: 'shortcut'
         };
       });
       return $connect.on('get_message', function(message) {
@@ -561,17 +620,13 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         message: message
       }, target);
     };
-    $scope.set_current_conversation = function(conversation) {
-      $scope.current_conversation = angular.copy(conversation);
-      return console.log('set current conversation', conversation);
-    };
+    $scope.set_current_conversation = set_current_conversation;
     $scope.object_length = function(object) {
       var i, length;
       length = 0;
       for (i in object) {
         ++length;
       }
-      console.log("object_length", length);
       return length;
     };
   });

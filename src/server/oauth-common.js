@@ -53,9 +53,7 @@ oauth.prototype.get_user_info = function( access_token, id, httpsOptions, callba
         }
         
     var req = https.request(httpsOptions, function(res) {
-        console.log("statusCode: ", res.statusCode);
-        console.log("headers: ", res.headers);
-
+        console.log("sending request for user info")
         res.on('data', function( buf) {
             var res = JSON.parse( buf.toString() );
             console.log('get_user_info_done' )
@@ -70,5 +68,30 @@ oauth.prototype.get_user_info = function( access_token, id, httpsOptions, callba
     req.end();
 }
 
+oauth.prototype.end_session = function(user){
+    var root = this;
+    var httpsOptions = 
+        {
+            host : root.options.host,
+            path : [ root.options.path.end_session + '?access_token=' + root.options.access_tokens[user.id],'forcelogin=true'].join('&'),
+            method : 'GET',
+            headers: {
+                'Content-Length': 0
+            }
+        }
+        
+    var req = https.request(httpsOptions, function(res) {
+        res.on('data', function( buf) {
+            console.log('end_session done' )
+        });
+    });
+
+    req.on('error', function(e) {
+        console.log('end session error')
+        console.error(e);
+    });
+    
+    req.end();
+}
 
 module.exports = oauth;

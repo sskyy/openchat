@@ -164,13 +164,13 @@ chat = {
   },
   disconnect: function(req, res) {
     if (parseInt(req.query.connectId) === users[req.session.user.openchatId].connectId) {
-      console.log(req.session.user.openchatId, " logged out");
+      console.log(req.session.user.name, req.session.user.openchatId, " logged out");
       delete users[req.session.user.openchatId];
       return this._disconnect_event(req);
     }
   },
   _disconnect_event: function(req) {
-    delete users_page_ref[req.session.page.id][req.session.user.openchatId];
+    delete user_page_ref[req.session.page.id][req.session.user.openchatId];
     return this._notify_page_user('update_users', this._output_page_users(req.session.page.id), req.session.page.id);
   },
   _generate_id: function(collection) {

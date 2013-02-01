@@ -72,7 +72,7 @@ html,body{height:100%}
         #chat_window_shortcut{
             float : right;
             position : relative;
-            margin-right : 170px;
+            margin-right : 250px;
             cursor:pointer;
             .user_shortcut{
                 padding:10px;
@@ -81,9 +81,8 @@ html,body{height:100%}
                 line-height: 200%;
                 box-shadow: 0 0 0 0px rgba(150, 150, 150, 0.1), 0 1px 3px rgba(25, 25, 25, 0.3), 0 10px 15px rgba(200, 200, 200, 0.1) inset;
                 &.active{
-                    background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
-                    color: #fff;
                     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+                    border-left:5px #f89406 solid;
                     font-weight:bold;
                 }
             }
@@ -92,7 +91,7 @@ html,body{height:100%}
         #chat_window{
             float : right;
             position : relative;
-            margin-right : 170px;
+            margin-right : 250px;
             padding : 10px;
             border : 1px #ddd solid;
             box-shadow: 0 0 0 0px rgba(150, 150, 150, 0.1), 0 1px 3px rgba(25, 25, 25, 0.3), 0 10px 15px rgba(200, 200, 200, 0.1) inset;
@@ -127,11 +126,16 @@ html,body{height:100%}
                     padding: 4px 4px;
                     font-size: 14px;
                     font-weight: bold;
-                    background: #eee;
-                    border-bottom: 1px #ddd solid;
+                    background:#fff;
                     border-top: 1px #ddd solid;
-                    &.active{
-                        background:#fff;
+                    cursor:pointer;
+                    border-left:5px #D9EDF7 solid;
+                    &.openchat_disconnected{
+                        background: #eee;
+                        border-left:5px #fff solid;
+                    }
+                    &.openchat_unread{
+                        border-left:5px #f89406 solid;
                     }
                 }
 
