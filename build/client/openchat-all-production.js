@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359695903000';
+  window._OPENCHAT_BUILD = '1359696497000';
 
   angular.module('openchat.service', []);
 
@@ -668,8 +668,8 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 
   angular.module('openchat.directive').directive('ngScreenHeight', function() {
     return function(scope, element, attrs) {
-      console.log('directive ngScreenHeight begin', document.body.clientHeight);
-      return element.css('height', "" + (document.body.clientHeight - 67) + "px");
+      console.log('directive ngScreenHeight begin', document.body.offsetHeight);
+      return element.css('height', "" + (document.body.offsetHeight - 67) + "px");
     };
   });
 
