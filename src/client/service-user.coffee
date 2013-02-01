@@ -3,6 +3,7 @@
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
   base = 'http://<%=config.host%>:<%=config.port%>'
   $user = {};
+  oauthWindow = null;
   
   get_user_info = ( oauth_id )->
     return $http.jsonp( "#{base}/oauth/user_info?callback=JSON_CALLBACK&oauth_id=#{oauth_id}")
@@ -20,15 +21,17 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
         'forcelogin=true',
         'state=weibo:'+oauth_id].join('&')
       
-      window.open url+param, '', 'height=350,width=600'
+      oauthWindow = window.open url+param, '', 'height=350,width=600'
       
       interval_limit = 100
       interval = $window.setInterval( ()->
         if !interval_limit
           $window.clearInterval( interval ) 
+          oauthWindow.close() if oauthWindow
           return q.reject()
         get_user_info( oauth_id ).then((user)->
           $window.clearInterval( interval ) 
+          oauthWindow.close() if oauthWindow
           q.resolve(user)
         ,()->
           interval_limit--

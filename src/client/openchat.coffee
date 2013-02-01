@@ -10,3 +10,4 @@ window._OPENCHAT_BUILD = '<%=_openchat_build%>'
 #{include "controller-private_chat.coffee"}
 #{include "controller-public_chat.coffee"}
 #{include "controller-user_list.coffee"}
+#{include "directive-ng_screen_height.coffee"}

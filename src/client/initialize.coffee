@@ -1,8 +1,8 @@
 url = "http://<%=config.host%>:<%=config.port%>" 
 angular.module('initialize',[]).run( ( $http,$window )->
-  append_template = ( template, id )->
+  append_template = ( template, selector )->
     htmlRef = angular.element(template);
-    container = document.getElementById( id );
+    container = (/^#/.test(selector) && document.getElementById( selector ) ) || document.getElementByTagName( selector );
     angular.element(container).append( htmlRef );
     angular.bootstrap( htmlRef, ['openchat'] );
   
@@ -22,7 +22,7 @@ angular.module('initialize',[]).run( ( $http,$window )->
   $http.jsonp( "#{url}/resource/jsonp?resource=build/client/openchat.tpl.html&callback=JSON_CALLBACK").error(()->
     console.log("get template error");
   ).success( ( html )->
-    append_template( decode_entity_quote( html ), 'openchat-container' );
+    append_template( decode_entity_quote( html ), 'body' );
   );
 
   load_css(  "#{url}/build/client/css/openchat.css?" );

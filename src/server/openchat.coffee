@@ -116,7 +116,7 @@ chat =
 
 
 exports.listen = ( server ) ->
-  console.log("a")
+  console.log("openchat module beging to listen")
   server.get('/chat/:event', ( req, res)->
     if( not req.params.event in chat  )
       return res.send( 404,{})

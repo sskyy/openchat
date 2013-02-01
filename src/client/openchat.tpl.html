@@ -38,6 +38,7 @@
                             <span >{{ user.name }}</span>
                         </div>
                     </div>
+                    
                     <div id="chat_window_main">
                         <div id="chat_window_current_conversation">
                             <div ng-repeat="message in current_conversation.messages">
@@ -53,11 +54,11 @@
             </div>
             
         </div>
-        <div ng-controller="user_list" ng-show="has_connected()" id="user_list_container">
+        <div ng-controller="user_list" ng-show="has_connected()" id="user_list_container"  ng-screen-height >
             <div id="user_list">
                 <div class="user_list_user" ng-repeat="user in users" ng-click="set_target(user);chat_window_status.mode='full'">
                     <div class="user_list_avatar_small">
-                        <img src="{{user.avatar}}">
+                        <img src="{{user.avatar}}" titile="{{user.name}}">
                     </div>
                     <div class="user_list_name">{{user.name}}</div>
                 </div>

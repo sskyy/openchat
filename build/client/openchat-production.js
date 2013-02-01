@@ -1,10 +1,12 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359105123000';
+  window._OPENCHAT_BUILD = '1359694465000';
 
   angular.module('openchat.service', []);
 
-  angular.module('openchat', ['openchat.service']);
+  angular.module('openchat.directive', []);
+
+  angular.module('openchat', ['openchat.service', 'openchat.directive']);
 
   /* service connect. using socket.io
   */
@@ -158,9 +160,10 @@
   });
 
   angular.module('openchat.service').service('$user', function($q, $http, $window) {
-    var $user, base, get_user_info, user_login;
+    var $user, base, get_user_info, oauthWindow, user_login;
     base = 'http://jieq1u3u19.elb7.stacklab.org:80';
     $user = {};
+    oauthWindow = null;
     get_user_info = function(oauth_id) {
       return $http.jsonp("" + base + "/oauth/user_info?callback=JSON_CALLBACK&oauth_id=" + oauth_id);
     };
@@ -174,15 +177,21 @@
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
         param = ['?client_id=3312201828', 'redirect_uri=jieq1u3u19.elb7.stacklab.org/oauth/callback', 'forcelogin=true', 'state=weibo:' + oauth_id].join('&');
-        window.open(url + param, '', 'height=350,width=600');
+        oauthWindow = window.open(url + param, '', 'height=350,width=600');
         interval_limit = 100;
         return interval = $window.setInterval(function() {
           if (!interval_limit) {
             $window.clearInterval(interval);
+            if (oauthWindow) {
+              oauthWindow.close();
+            }
             return q.reject();
           }
           return get_user_info(oauth_id).then(function(user) {
             $window.clearInterval(interval);
+            if (oauthWindow) {
+              oauthWindow.close();
+            }
             return q.resolve(user);
           }, function() {
             return interval_limit--;
@@ -498,6 +507,14 @@
       $chat.set_target(user);
       $scope.userSelected = {};
       return $scope.userSelected[user.openchatId] = user;
+    };
+  });
+
+  angular.module('openchat.directive').directive('ngScreenHeight', function() {
+    return function(scope, element, attrs) {
+      console.log('directive ngScreenHeight begin', document.body.clientHeight);
+      element.css('height', "" + (document.body.clientHeight - 67) + "px");
+      return console.log(element);
     };
   });
 
