@@ -1,14 +1,11 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359696497000'
+window._OPENCHAT_BUILD = '1359697780000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
 angular.module('openchat', ['openchat.service','openchat.directive'])
-
-
-
 
 
 
@@ -418,7 +415,7 @@ angular.module('openchat').controller('user_list', ( $scope, $connect, $user, $c
 
 angular.module('openchat.directive').directive('ngScreenHeight',()->
   return ( scope, element, attrs )->
-    console.log('directive ngScreenHeight begin',document.body.offsetHeight);
-    element.css( 'height', "#{document.body.offsetHeight-67}px" );
+    console.log('directive ngScreenHeight begin',document.documentElement.clientHeight );
+    element.css( 'height', "#{document.documentElement.clientHeight-67}px" );
 )  
 

@@ -24,7 +24,7 @@ module.exports = function(grunt) {
                 tasks : ['less']
             },
             template : {
-                files : ['src/client/openchat.tpl.html'],
+                files : ['src/client/openchat.tpl.html','src/client/openchat_runner.tpl.html'],
                 tasks : ['build-template']
             }
         },
