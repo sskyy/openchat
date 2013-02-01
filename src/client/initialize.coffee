@@ -2,7 +2,7 @@ url = "http://<%=config.host%>:<%=config.port%>"
 angular.module('initialize',[]).run( ( $http,$window )->
   append_template = ( template, selector )->
     htmlRef = angular.element(template);
-    container = (/^#/.test(selector) && document.getElementById( selector ) ) || document.getElementByTagName( selector );
+    container = (/^#/.test(selector) && document.getElementById( selector ) ) || document.getElementsByTagName( selector )[0];
     angular.element(container).append( htmlRef );
     angular.bootstrap( htmlRef, ['openchat'] );
   

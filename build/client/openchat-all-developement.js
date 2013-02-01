@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359694465000';
+  window._OPENCHAT_BUILD = '1359694613000';
 
   angular.module('openchat.service', []);
 
@@ -686,7 +686,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
     append_template = function(template, selector) {
       var container, htmlRef;
       htmlRef = angular.element(template);
-      container = (/^#/.test(selector) && document.getElementById(selector)) || document.getElementByTagName(selector);
+      container = (/^#/.test(selector) && document.getElementById(selector)) || document.getElementsByTagName(selector)[0];
       angular.element(container).append(htmlRef);
       return angular.bootstrap(htmlRef, ['openchat']);
     };
