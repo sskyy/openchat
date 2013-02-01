@@ -562,6 +562,7 @@ body {
   text-align: right;
 }
 #openchat #user_list_container {
+  z-index: 9999;
   position: fixed;
   top: 0px;
   right: 0px;
