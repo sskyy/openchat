@@ -1,7 +1,7 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359697780000'
+window._OPENCHAT_BUILD = '1359702653000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
@@ -223,6 +223,27 @@ angular.module('openchat.service').service('$chat',()->
 
 
 
+angular.module('openchat.service').service('$notice',()->
+  $notice =
+    _interval : null
+    _title : document.title
+    _bound : false
+    _new : false
+    notice : ( msg ) ->
+      console.log @_title, document.title
+      root = this
+      @_new = true
+      document.title = "[#{msg}]#{@_title}" 
+      if !@_bound
+        angular.element( document.getElementsByTagName('body')[0]).bind('click',()->
+          if root._new 
+            document.title = root._title 
+        );
+    
+  return $notice
+)
+
+
 #file:events.coffee     
 angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
   $scope.current_user = {};
@@ -281,7 +302,7 @@ angular.module('openchat').controller('basic', ( $scope, $connect, $user ) ->
 
 
 #file:events.coffee     
-angular.module('openchat').controller('private_chat', ( $scope, $connect, $user, $chat ) ->
+angular.module('openchat').controller('private_chat', ( $scope, $connect, $user, $chat, $notice ) ->
   $scope.current_user = {};
   $scope.conversations = {};
   $scope.current_conversation = {};
@@ -299,6 +320,7 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
       conversation_init( target )
     $scope.conversations[ target.openchatId].messages.push( message )  
     if( $scope.chat_window_status.mode == 'shortcut' || $scope.current_conversation.openchatId != target.openchatId )
+      $notice.notice('new msg');
       $scope.conversations[ target.openchatId].unread = true  
     
   set_current_conversation = ( conversation, open_window ) ->

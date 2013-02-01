@@ -1,7 +1,7 @@
 
 
 #file:events.coffee     
-angular.module('openchat').controller('private_chat', ( $scope, $connect, $user, $chat ) ->
+angular.module('openchat').controller('private_chat', ( $scope, $connect, $user, $chat, $notice ) ->
   $scope.current_user = {};
   $scope.conversations = {};
   $scope.current_conversation = {};
@@ -19,6 +19,7 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
       conversation_init( target )
     $scope.conversations[ target.openchatId].messages.push( message )  
     if( $scope.chat_window_status.mode == 'shortcut' || $scope.current_conversation.openchatId != target.openchatId )
+      $notice.notice('new msg');
       $scope.conversations[ target.openchatId].unread = true  
     
   set_current_conversation = ( conversation, open_window ) ->

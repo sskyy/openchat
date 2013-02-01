@@ -1,2 +1,1 @@
-fix bug:
-1. server disconnect event misspelling
+add title notice for unread messages; fixed z-index bugs; deleted unused less file

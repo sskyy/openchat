@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359697780000';
+  window._OPENCHAT_BUILD = '1359702653000';
 
   angular.module('openchat.service', []);
 
@@ -300,6 +300,31 @@
     return $chat;
   });
 
+  angular.module('openchat.service').service('$notice', function() {
+    var $notice;
+    $notice = {
+      _interval: null,
+      _title: document.title,
+      _bound: false,
+      _new: false,
+      notice: function(msg) {
+        var root;
+        console.log(this._title, document.title);
+        root = this;
+        this._new = true;
+        document.title = "[" + msg + "]" + this._title;
+        if (!this._bound) {
+          return angular.element(document.getElementsByTagName('body')[0]).bind('click', function() {
+            if (root._new) {
+              return document.title = root._title;
+            }
+          });
+        }
+      }
+    };
+    return $notice;
+  });
+
   angular.module('openchat').controller('basic', function($scope, $connect, $user) {
     $scope.current_user = {};
     $scope.message = {};
@@ -362,7 +387,7 @@
     };
   });
 
-  angular.module('openchat').controller('private_chat', function($scope, $connect, $user, $chat) {
+  angular.module('openchat').controller('private_chat', function($scope, $connect, $user, $chat, $notice) {
     var bind_events, conversation_init, conversation_push, in_array, set_current_conversation;
     $scope.current_user = {};
     $scope.conversations = {};
@@ -389,6 +414,7 @@
       }
       $scope.conversations[target.openchatId].messages.push(message);
       if ($scope.chat_window_status.mode === 'shortcut' || $scope.current_conversation.openchatId !== target.openchatId) {
+        $notice.notice('new msg');
         return $scope.conversations[target.openchatId].unread = true;
       }
     };
