@@ -450,6 +450,7 @@ body {
   margin-bottom: 8px;
 }
 #openchat #chat_window_container {
+  z-index: 9999;
   position: fixed;
   bottom: 0px;
   left: 0px;
@@ -483,6 +484,8 @@ body {
   font-weight: bold;
 }
 #openchat #chat_window_container #chat_window {
+  z-index: 9999;
+  background: #fff;
   float: right;
   position: relative;
   margin-right: 250px;
@@ -563,6 +566,7 @@ body {
   top: 0px;
   right: 0px;
   overflow-y: scroll;
+  background: #fff;
 }
 #openchat #user_list_container #user_list {
   font-size: 12px;

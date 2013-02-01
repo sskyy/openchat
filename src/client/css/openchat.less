@@ -48,6 +48,7 @@ html,body{height:100%}
 
 
     #chat_window_container{
+        z-index:9999;
         position : fixed;
         bottom: 0px;
         left : 0px;
@@ -81,6 +82,8 @@ html,body{height:100%}
         }
 
         #chat_window{
+            z-index:9999;
+            background:#fff;
             float : right;
             position : relative;
             margin-right : 250px;
@@ -164,6 +167,7 @@ html,body{height:100%}
         top : 0px;
         right : 0px;
         overflow-y:scroll;
+        background:#fff;
         #user_list{
             font-size:12px;
             text-align:center;
