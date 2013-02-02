@@ -4,9 +4,11 @@ var express = require('express'),
     server = http.createServer(app),
     port = 80
 
-if( process.env.NODE_SERVER_MODE == 'debug')
+if( process.env.NODE_SERVER_MODE == 'debug'){
     app.DEBUG_MODE = true
     port = 8000
+}
+
 
 server.listen(port);
 app.use(express.cookieParser());
