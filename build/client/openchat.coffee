@@ -7,8 +7,6 @@ angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
 angular.module('openchat', ['openchat.service','openchat.directive'])
 
-
-
 ### service connect. using socket.io ###
 
 #angular.module('openchat.service',[])
@@ -222,7 +220,6 @@ angular.module('openchat.service').service('$chat',()->
 
 
 
-
 angular.module('openchat.service').service('$notice',()->
   $notice =
     _interval : null
@@ -401,7 +398,6 @@ angular.module('openchat').controller('private_chat', ( $scope, $connect, $user,
 angular.module('openchat').controller('public_chat', ( $scope, $connect, $user ) ->
   return;
 )
-
 
 
 #file:events.coffee     

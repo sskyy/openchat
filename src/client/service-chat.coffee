@@ -37,4 +37,3 @@ angular.module('openchat.service').service('$chat',()->
 
 
 
-

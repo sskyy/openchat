@@ -4,13 +4,32 @@
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <!--<script src="http://<%=config.host%>:<%=config.port%>/socket.io/socket.io.js"></script>-->
-        <script src="http://<%=config.host%>:<%=config.port%>/build/client/angular.js"></script>
+        <style>
+            body{
+                min-height: 1080px;
+            }
+            
+            .title{
+                font-size :60px;
+                font-family: 'Helvetica Neue', Helvetica, Arial ;
+            }
+            .container{
+                line-height: 30px;
+                font-family: "Microsoft YaHei";
+                font-size: 20px;
+                color : #999;
+            }
+        </style>
     </head>
     <body>
+        <div class="container">
+            <div class="title">openchat runner</div>
+            <div class="description">
+                Click the button at corner. Support only weibo account now.
+            </div>
+        </div>
         <div id="openchat-container">
         </div>
         <script src="http://<%=config.host%>:<%=config.port%>/build/client/openchat-all-<%=type%>.js"></script>
     </body>
 </html>
-
-

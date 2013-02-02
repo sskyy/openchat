@@ -2,7 +2,7 @@
 
 module.exports = {
     'production' : {
-        'host' : "jieq1u3u19.elb7.stacklab.org", 
+        'host' : "42.96.146.173", 
         'socket.io': {
             port : 8000
         },
