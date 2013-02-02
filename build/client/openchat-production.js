@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359810653000';
+  window._OPENCHAT_BUILD = '1359811529000';
 
   angular.module('openchat.service', []);
 
@@ -187,16 +187,16 @@
             }
             return q.reject();
           }
-          return get_user_info(oauth_id).then(function(user) {
+          return get_user_info(oauth_id).then(function(res) {
             $window.clearInterval(interval);
             if (oauthWindow) {
               oauthWindow.close();
             }
-            if (('data' in user) && !('name' in user.data)) {
-              console.log('user info exception', user, !('name' in user));
+            if (!('id' in res.data)) {
+              console.log('user info exception', res.data);
               return q.reject();
             } else {
-              return q.resolve(user);
+              return q.resolve(res);
             }
           }, function() {
             return interval_limit--;

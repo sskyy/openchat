@@ -136,14 +136,14 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
           $window.clearInterval( interval ) 
           oauthWindow.close() if oauthWindow
           return q.reject()
-        get_user_info( oauth_id ).then((user)->
+        get_user_info( oauth_id ).then(( res )->
           $window.clearInterval( interval ) 
           oauthWindow.close() if oauthWindow
-          if ('data' of user ) && !('name' of user.data ) 
-            console.log( 'user info exception', user, !('name' of user) )
+          if !('id' of res.data ) 
+            console.log( 'user info exception', res.data )
             q.reject()
           else
-            q.resolve(user)
+            q.resolve( res )
         ,()->
           interval_limit--
         )
