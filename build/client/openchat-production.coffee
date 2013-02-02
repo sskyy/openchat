@@ -1,7 +1,7 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359808966000'
+window._OPENCHAT_BUILD = '1359809364000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
@@ -11,7 +11,7 @@ angular.module('openchat', ['openchat.service','openchat.directive'])
 
 #angular.module('openchat.service',[])
 #.service('$connect', () ->
-#  url = '42.96.146.173/chat'
+#  url = 'openchat.angularjs.cn/chat'
 #  if( typeof( io) == undefined )
 #    console.log( "socket.io not exist");
 #    return {};
@@ -28,7 +28,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
   $connect = 
     _events : {},
     _connectId : null,
-    url:'http://42.96.146.173:80/chat',
+    url:'http://openchat.angularjs.cn:80/chat',
     interval : 1000,
     heartbeat : null,
     connected : false,
@@ -108,7 +108,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
 
 #user main file
 angular.module('openchat.service').service('$user', ( $q, $http, $window )->
-  base = 'http://42.96.146.173:80'
+  base = 'http://openchat.angularjs.cn:80'
   $user = {};
   oauthWindow = null;
   
@@ -124,7 +124,7 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       
       url = 'https://api.weibo.com/oauth2/authorize'
       param = ['?client_id=3394267529',
-        'redirect_uri=42.96.146.173/oauth/callback',
+        'redirect_uri=openchat.angularjs.cn/oauth/callback',
         'forcelogin=true',
         'state=weibo:'+oauth_id].join('&')
       

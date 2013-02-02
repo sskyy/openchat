@@ -2,7 +2,7 @@
 
 module.exports = {
     'production' : {
-        'host' : "42.96.146.173", 
+        'host' : "openchat.angularjs.cn", 
         'socket.io': {
             port : 8000
         },

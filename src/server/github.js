@@ -19,7 +19,7 @@ function handler( req, res ){
     });
     cmd.stderr.setEncoding("utf8");
     cmd.stderr.on("data",function(err){
-        console.log( "err:", err); 
+        console.log( "err:", err.toString()); 
     });
     
     cmd.on("exit",function( code ){

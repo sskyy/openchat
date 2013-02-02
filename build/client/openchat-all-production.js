@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359808966000';
+  window._OPENCHAT_BUILD = '1359809364000';
 
   angular.module('openchat.service', []);
 
@@ -177,7 +177,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
     $connect = {
       _events: {},
       _connectId: null,
-      url: 'http://42.96.146.173:80/chat',
+      url: 'http://openchat.angularjs.cn:80/chat',
       interval: 1000,
       heartbeat: null,
       connected: false,
@@ -317,7 +317,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 
   angular.module('openchat.service').service('$user', function($q, $http, $window) {
     var $user, base, get_user_info, oauthWindow, user_login;
-    base = 'http://42.96.146.173:80';
+    base = 'http://openchat.angularjs.cn:80';
     $user = {};
     oauthWindow = null;
     get_user_info = function(oauth_id) {
@@ -332,7 +332,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
         oauth_id = data.oauth_id;
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
-        param = ['?client_id=3394267529', 'redirect_uri=42.96.146.173/oauth/callback', 'forcelogin=true', 'state=weibo:' + oauth_id].join('&');
+        param = ['?client_id=3394267529', 'redirect_uri=openchat.angularjs.cn/oauth/callback', 'forcelogin=true', 'state=weibo:' + oauth_id].join('&');
         oauthWindow = window.open(url + param, '', 'height=350,width=600');
         interval_limit = 100;
         return interval = $window.setInterval(function() {
@@ -717,7 +717,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 (function() {
   var url;
 
-  url = "http://42.96.146.173:80";
+  url = "http://openchat.angularjs.cn:80";
 
   angular.module('initialize', []).run(function($http, $window) {
     var append_template, decode_entity_quote, load_css;
