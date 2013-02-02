@@ -17,7 +17,7 @@ function handler( req, res ){
     cmd.stdout.on("data",function(data){
         console.log( "data:", data)
     });
-    cmd.stdout.setEncoding("utf8");
+    cmd.stderr.setEncoding("utf8");
     cmd.stderr.on("data",function(err){
         console.log( "err:", err); 
     });
