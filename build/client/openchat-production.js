@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359810484000';
+  window._OPENCHAT_BUILD = '1359810653000';
 
   angular.module('openchat.service', []);
 
@@ -192,7 +192,7 @@
             if (oauthWindow) {
               oauthWindow.close();
             }
-            if (!('name' in user)) {
+            if (('data' in user) && !('name' in user.data)) {
               console.log('user info exception', user, !('name' in user));
               return q.reject();
             } else {

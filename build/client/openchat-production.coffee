@@ -1,7 +1,7 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359810484000'
+window._OPENCHAT_BUILD = '1359810653000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
@@ -139,7 +139,7 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
         get_user_info( oauth_id ).then((user)->
           $window.clearInterval( interval ) 
           oauthWindow.close() if oauthWindow
-          if !('name' of user ) 
+          if ('data' of user ) && !('name' of user.data ) 
             console.log( 'user info exception', user, !('name' of user) )
             q.reject()
           else
