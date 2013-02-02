@@ -32,7 +32,10 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
         get_user_info( oauth_id ).then((user)->
           $window.clearInterval( interval ) 
           oauthWindow.close() if oauthWindow
-          q.resolve(user)
+          if !('name' of user ) 
+            q.reject()
+          else
+            q.resolve(user)
         ,()->
           interval_limit--
         )

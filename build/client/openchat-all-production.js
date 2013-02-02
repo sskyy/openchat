@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359809364000';
+  window._OPENCHAT_BUILD = '1359809753000';
 
   angular.module('openchat.service', []);
 
@@ -348,7 +348,11 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
             if (oauthWindow) {
               oauthWindow.close();
             }
-            return q.resolve(user);
+            if (!('name' in user)) {
+              return q.reject();
+            } else {
+              return q.resolve(user);
+            }
           }, function() {
             return interval_limit--;
           });
