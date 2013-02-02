@@ -40,7 +40,7 @@
                     </div>
                     
                     <div id="chat_window_main">
-                        <div id="chat_window_current_conversation">
+                        <div id="chat_window_current_conversation" ng-scroll-to-bottom>
                             <div ng-repeat="message in current_conversation.messages">
                                 <div class="message" ng-class="message.source.name==current_user.name&&'mine'">{{message.message}}</div>
                             </div>

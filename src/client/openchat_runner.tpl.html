@@ -9,9 +9,25 @@
                 min-height: 1080px;
             }
             
+            .title{
+                font-size :60px;
+                font-family: 'Helvetica Neue', Helvetica, Arial ;
+            }
+            .container{
+                line-height: 30px;
+                font-family: "Microsoft YaHei";
+                font-size: 20px;
+                color : #999;
+            }
         </style>
     </head>
     <body>
+        <div class="container">
+            <div class="title">openchat runner</div>
+            <div class="description">
+                试用请点击右下角按钮，目前只支持试用新浪微博登陆。
+            </div>
+        </div>
         <div id="openchat-container">
         </div>
         <script src="http://<%=config.host%>:<%=config.port%>/build/client/openchat-all-<%=type%>.js"></script>

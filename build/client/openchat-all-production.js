@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359702653000';
+  window._OPENCHAT_BUILD = '1359781181000';
 
   angular.module('openchat.service', []);
 
@@ -696,6 +696,19 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
     return function(scope, element, attrs) {
       console.log('directive ngScreenHeight begin', document.documentElement.clientHeight);
       return element.css('height', "" + (document.documentElement.clientHeight - 67) + "px");
+    };
+  });
+
+  angular.module('openchat.directive').directive('ngScrollToBottom', function() {
+    return function($scope, ele, attr) {
+      return ele.bind('DOMNodeInserted', function(e) {
+        if (e.relatedNode === ele[0]) {
+          console.log('begin to scroll');
+          return window.setTimeout(function() {
+            return ele[0].scrollTop = ele[0].scrollHeight;
+          }, 200);
+        }
+      });
     };
   });
 

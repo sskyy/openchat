@@ -542,6 +542,9 @@ body {
   float: left;
 }
 #openchat #chat_window_container #chat_window #chat_window_main #chat_window_current_conversation {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  word-break: break-all;
   border-left: 1px solid #EAEAEA;
   border-right: 1px solid #EAEAEA;
   border-top: 1px solid #D9D9D9;

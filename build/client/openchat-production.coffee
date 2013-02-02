@@ -1,7 +1,7 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359702653000'
+window._OPENCHAT_BUILD = '1359781181000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
@@ -440,4 +440,17 @@ angular.module('openchat.directive').directive('ngScreenHeight',()->
     console.log('directive ngScreenHeight begin',document.documentElement.clientHeight );
     element.css( 'height', "#{document.documentElement.clientHeight-67}px" );
 )  
+
+
+angular.module('openchat.directive').directive('ngScrollToBottom',()->
+  return ( $scope, ele, attr )->
+    ele.bind('DOMNodeInserted',( e)->
+      if( e.relatedNode == ele[0] )
+        console.log( 'begin to scroll')
+        window.setTimeout(()->
+          ele[0].scrollTop = ele[0].scrollHeight; 
+        , 200)
+        
+    )
+)
 
