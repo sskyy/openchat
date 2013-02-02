@@ -10,7 +10,7 @@ exports.listen = function( server ){
 function handler( req, res ){
     console.log( "github update call.");
     var cmd = spawn('sudo', ['git','pull'], {
-        'cwd':'/home/ubuntu/openchat'
+        'cwd':'/opt/openchat'
     });
         
     cmd.stdout.setEncoding("utf8");

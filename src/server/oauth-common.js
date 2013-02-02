@@ -56,7 +56,7 @@ oauth.prototype.get_user_info = function( access_token, id, httpsOptions, callba
         console.log("sending request for user info")
         res.on('data', function( buf) {
             var res = JSON.parse( buf.toString() );
-            console.log('get_user_info_done' )
+            console.log('get_user_info_done' , res)
             callback( res );
         });
     });
