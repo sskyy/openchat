@@ -3,9 +3,9 @@ var _ = require('underscore');
 var oauth = require('./oauth-common.js');
 
 var options = {
-    appkey:3312201828,
-    appsecret:'504c80843945b0c9b3b44ec188cc1d27',
-    domain:'jieq1u3u19.elb7.stacklab.org',
+    appkey:3394267529,
+    appsecret:'cb346f0a0ddd6eeaf8c1b67ce69e185e',
+    domain:'openchat.angularjs.cn',
     path:{
         access_token:'/oauth2/access_token',
         user_info : '/2/users/show.json',
