@@ -8,7 +8,7 @@ module.exports = {
         },
         'port' : 80,
         'weibo' : {
-            appkey : 3312201828
+            appkey : 3394267529
         },
         'version' : ''
     },
@@ -19,7 +19,7 @@ module.exports = {
         },
         'port' : 8000,
         'weibo' : {
-            appkey : 3312201828
+            appkey : 3394267529
         },
         'version' : '_local',
         'watch' : 'auto'

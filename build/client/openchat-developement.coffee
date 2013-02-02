@@ -1,7 +1,7 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359806091000'
+window._OPENCHAT_BUILD = '1359808966000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
@@ -123,7 +123,7 @@ angular.module('openchat.service').service('$user', ( $q, $http, $window )->
       console.log oauth_id
       
       url = 'https://api.weibo.com/oauth2/authorize'
-      param = ['?client_id=3312201828',
+      param = ['?client_id=3394267529',
         'redirect_uri=127.0.0.1/oauth/callback',
         'forcelogin=true',
         'state=weibo:'+oauth_id].join('&')

@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359806091000';
+  window._OPENCHAT_BUILD = '1359808966000';
 
   angular.module('openchat.service', []);
 
@@ -176,7 +176,7 @@
         oauth_id = data.oauth_id;
         console.log(oauth_id);
         url = 'https://api.weibo.com/oauth2/authorize';
-        param = ['?client_id=3312201828', 'redirect_uri=127.0.0.1/oauth/callback', 'forcelogin=true', 'state=weibo:' + oauth_id].join('&');
+        param = ['?client_id=3394267529', 'redirect_uri=127.0.0.1/oauth/callback', 'forcelogin=true', 'state=weibo:' + oauth_id].join('&');
         oauthWindow = window.open(url + param, '', 'height=350,width=600');
         interval_limit = 100;
         return interval = $window.setInterval(function() {
