@@ -1,7 +1,7 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359781181000'
+window._OPENCHAT_BUILD = '1359785239000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])

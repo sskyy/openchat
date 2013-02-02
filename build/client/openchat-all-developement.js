@@ -156,7 +156,7 @@ ngModel:qd,ngList:sd,ngChange:rd,required:cc,ngRequired:cc,ngValue:ud}).directiv
 ;
 (function() {
 
-  window._OPENCHAT_BUILD = '1359781181000';
+  window._OPENCHAT_BUILD = '1359785239000';
 
   angular.module('openchat.service', []);
 
