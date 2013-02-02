@@ -1,14 +1,18 @@
 var express = require('express'),
     app = express(),
     http = require('http'),
-    server = http.createServer(app)
-
-server.listen(8000);
-app.use(express.cookieParser());
-app.use(express.cookieSession({key:'connect.sess',secret:'openchat'}));
+    server = http.createServer(app),
+    port = 80
 
 if( process.env.NODE_SERVER_MODE == 'debug')
     app.DEBUG_MODE = true
+    port = 8000
+
+server.listen(port);
+app.use(express.cookieParser());
+app.use(express.cookieSession({key:'connect.sess',secret:'openchat'}));
+
+
 
 //using socket.io
 //var io = require('./openchat.js').listen(server);
