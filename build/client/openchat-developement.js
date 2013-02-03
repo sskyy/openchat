@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359864646000';
+  window._OPENCHAT_BUILD = '1359868497000';
 
   angular.module('openchat.service', []);
 
@@ -117,18 +117,17 @@
         return $http.jsonp("" + this.url + "/recieve", {
           params: params
         }).then(function(res) {
-          var event, _i, _len, _ref, _results;
+          var event, _i, _len, _ref;
           if ("error" in res.data) {
             return root.disconnect(true);
           }
           root.failures = 0;
           _ref = res.data;
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             event = _ref[_i];
-            _results.push(root._call_callbacks(event.event, event.data));
+            root._call_callbacks(event.event, event.data);
           }
-          return _results;
+          return res = null;
         }, function(res) {
           if (res.status === 502) {
             console.log('server down');

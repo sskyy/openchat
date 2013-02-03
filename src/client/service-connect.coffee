@@ -73,6 +73,7 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
         root.failures = 0
         for event in res.data
           root._call_callbacks( event.event, event.data )
+        res = null;
       ,( res )->
         if( res.status == 502 )
           console.log( 'server down')
@@ -83,7 +84,6 @@ angular.module('openchat.service').service('$connect',( $http, $window, $q)->
           
         return root.failures++;
       )
-      
       
     _call_callbacks:( event, data )->
       root = this
