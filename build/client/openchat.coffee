@@ -7,6 +7,7 @@ angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
 angular.module('openchat', ['openchat.service','openchat.directive'])
 
+
 ### service connect. using socket.io ###
 
 #angular.module('openchat.service',[])

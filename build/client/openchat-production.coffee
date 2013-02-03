@@ -1,11 +1,12 @@
 
 #console = { log:()-> } unless console?
 
-window._OPENCHAT_BUILD = '1359868497000'
+window._OPENCHAT_BUILD = '1359871706000'
 
 angular.module('openchat.service',[])
 angular.module('openchat.directive',[])
 angular.module('openchat', ['openchat.service','openchat.directive'])
+
 
 ### service connect. using socket.io ###
 
