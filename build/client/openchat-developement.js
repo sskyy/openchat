@@ -1,6 +1,6 @@
 (function() {
 
-  window._OPENCHAT_BUILD = '1359811529000';
+  window._OPENCHAT_BUILD = '1359864646000';
 
   angular.module('openchat.service', []);
 

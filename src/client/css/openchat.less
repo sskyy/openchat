@@ -12,6 +12,7 @@
 html,body{height:100%}
 
 #openchat{
+    line-height:100%;
     z-index:9990;
     a.btn{
         text-decoration:none;
@@ -26,7 +27,7 @@ html,body{height:100%}
         padding:8px;
         background:#fff;
         &.openchat_connected{
-            border-left : 5px #D9EDF7 solid;
+            border-left : 5px #c8e4f3 solid;
         }
         #openchat_current_user{
             #openchat_current_user_avatar{
@@ -36,11 +37,37 @@ html,body{height:100%}
             }   
             #openchat_current_user_body{
                 display:inline-block;
+                padding-right:20px;
+                width:75px;
+                position:relative;
+                height:50px;
+                vertical-align:top;
                 #openchat_current_user_name{
                     color:#333;
                     font-size:12px;
                     line-height:12px;
                     margin-bottom:8px;
+                }
+                #openchat_current_user_btn{
+                    position:absolute;
+                    bottom:0px;
+                }
+                #openchat_logout_btn{
+                    position:absolute;
+                    right:-2px;
+                    top:-10px;
+                    font-size:14px;
+                    line-height:14px;
+                    a:link{
+                        color:#999;
+                        text-decoration:none;
+                    }
+                    a:hover{
+                        color:#333;
+                    }
+                    a:visitied{
+                        color:#999;
+                    }
                 }
             }  
         }
@@ -179,6 +206,7 @@ html,body{height:100%}
             border-left:1px #eee solid;
             height : 100%;
             .user_list_avatar_small{
+                line-height:0px;
                 cursor:pointer;
                 padding:8px 8px 2px 8px;
                 img{

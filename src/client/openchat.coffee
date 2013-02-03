@@ -13,4 +13,3 @@ window._OPENCHAT_BUILD = '<%=_openchat_build%>'
 #{include "controller-user_list.coffee"}
 #{include "directive-ng_screen_height.coffee"}
 #{include "directive-ng_scroll_to_bottom.coffee"}
-

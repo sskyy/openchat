@@ -453,4 +453,3 @@ angular.module('openchat.directive').directive('ngScrollToBottom',()->
         
     )
 )
-

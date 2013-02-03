@@ -8,14 +8,15 @@
                 <div id="openchat_current_user_body">
                     <div id="openchat_current_user_name" >{{current_user.name}}@{{current_user.platform}}</div>
                     <div id="openchat_current_user_btn">
-                        <a ng-show="is_connected()" ng-click="disconnect()" class="btn">disconnect</a>
-                        <a ng-show="is_connected()" ng-click="logout()" class="btn btn-danger">logout</a>
-                        <a ng-show="!is_connected()" ng-click="connect()" class="btn btn-primary">login</a>
+                        <a ng-show="is_connected()" ng-click="disconnect()" class="btn btn-mini btn-danger">disconnect</a>
+                        <a ng-show="!is_connected()" ng-click="connect()" class="btn btn-mini btn-primary">login</a>
+                    </div>
+                    <div id="openchat_logout_btn">
+                        <a ng-show="is_connected()" ng-click="logout()">x</a>
                     </div>
                 </div>
             </div>
         </div>
-        
         <div ng-controller="private_chat"  id="chat_window_container">
             <div id="chat_window_shortcut" ng-show="chat_window_status.mode=='shortcut'">
                 <span class="user_shortcut" ng-class="user.unread&&'active'"  ng-repeat="user in conversations" ng-click="set_current_conversation(user, true)">{{user.name}}</span>
